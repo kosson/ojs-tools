@@ -42,6 +42,11 @@ function xmlFormat($string_from_hell){
     $string_from_hell = str_replace('‘','&#8216;',$string_from_hell);
     $string_from_hell = str_replace('“','&#8220;',$string_from_hell);
     $string_from_hell = str_replace('”','&#8221;',$string_from_hell);
+    $string_from_hell = str_replace('<','&#60;',$string_from_hell);	// < (less-than)
+    $string_from_hell = str_replace('>','&#62;',$string_from_hell); // > (greater-than)
+    $string_from_hell = str_replace('&','&#38;',$string_from_hell); // & (ampersand)
+    $string_from_hell = str_replace("'",'&#39;',$string_from_hell); // ' (single quote)
+    $string_from_hell = str_replace('"','&#34;',$string_from_hell); // " (double quote)
     return $string_from_hell;
 }
 
@@ -64,7 +69,7 @@ function getFiletype($ext){
  * @return string
  */
 function get_mime_type($filename) {
-    $idx = explode( '.', $filename );
+    $idx = explode( '.', (string)$filename ); // FIXED with copilot
     $count_explode = count($idx);
     $idx = strtolower($idx[$count_explode-1]);
 

@@ -110,7 +110,7 @@ And for all the articles in the issue:
 
 ![](doc/img/Linkage-all_articles_of_issue.png).
 
-Observe how `primary_contact_id` column gets populated with the correspondence values.
+Observe how `primary_contact_id` column gets populated with the correspondent values.
 All this implies a downtime needed of the app for safety reasons. You may try it on the fly on the production machine, but I would strongly not advice such move. Better safe than sorry.
 
 After you finished your import, redo all the links you've just destroyed.
