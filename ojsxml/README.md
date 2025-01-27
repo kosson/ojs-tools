@@ -8,6 +8,19 @@ Sample CSV files for both users and issues are included in the `examples` direct
 
 Note: This is NOT a comprehensive CSV to OJS XML conversion, and many fields are left out.
 
+It must be mentioned, that the script needs the following packages to be installed so that SQLite3 is available, and the specific error is silenced.
+
+```bash
+sudo apt install sqlite3 php-sqlite3
+```
+
+It would be very useful to be mentioned that a prior check with `php -m` for the `xmlwriter` would eliminate the specific error concerning the module.
+If it is not installed, one should do the following on Ubuntu 24.04: 
+
+```bash
+sudo apt install php8.3-mbstring php8.3-bcmath php8.3-zip php8.3-gd php8.3-curl php8.3-xml -y.
+```
+
 ## Known Issues
 
 * Each issue export XML file can contain __only one issue__. The adaptation of the scripts target 3.4. Multiple issues/XML file can lead to database corruption.
