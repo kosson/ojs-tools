@@ -1,5 +1,4 @@
 <?php
-
 namespace OJSXml;
 
 use XMLWriter;
@@ -204,11 +203,12 @@ class IssuesXmlBuilder extends XMLBuilder {
 
         $this->getXmlWriter()->endElement();
         $this->getXmlWriter()->endElement();
+
     }
 
     /**
      * Writes articles by section for an issue
-     * 
+     *
      * @param array $issueData
      */
     function writeArticles($issueData) {
@@ -245,7 +245,7 @@ class IssuesXmlBuilder extends XMLBuilder {
 
     /**
      * Write article and publication data for a single article
-     * 
+     *
      * @param array $articleData
      */
     function writeArticle($articleData) {
@@ -262,6 +262,7 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->writePublication($articleData);
 
         $this->getXmlWriter()->endElement();
+
     }
 
     function _writeSubmissionFile(array $articleData) {
@@ -301,6 +302,7 @@ class IssuesXmlBuilder extends XMLBuilder {
 
         $this->getXmlWriter()->endElement();
 
+
         $this->getXmlWriter()->endElement();
     }
 
@@ -312,14 +314,13 @@ class IssuesXmlBuilder extends XMLBuilder {
     function writePublication($articleData) {
         $this->getXmlWriter()->startElement("publication");
         $this->getXmlWriter()->writeAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
-        // $this->addLocaleAttribute();
+        $this->addLocaleAttribute();
         $this->getXmlWriter()->writeAttribute("version", "1");
         $this->getXmlWriter()->writeAttribute("status", "3");
         $this->getXmlWriter()->writeAttribute("date_published", date("Y-m-d", strtotime(trim($articleData["datePublished"]))));
         $this->getXmlWriter()->writeAttribute("section_ref", $articleData["sectionAbbrev"]);
         $this->getXmlWriter()->writeAttribute("seq", $articleData["publicationSeq"]);
-        
-        // <id type="internal" advice="ignore">664</id>
+
         $this->_writeIdElement($articleData["currentId"]);
 
         $this->writePublicationMetadata($articleData);
@@ -334,9 +335,11 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->endElement();
 
         $this->getXmlWriter()->endElement();
-    }	
+    }
 	
-	function writeCitations($citationString){		
+	
+	function writeCitations($citationString){
+		
 		if ($citationString != "") {
             $citations = parseNewLine($citationString);
             $this->getXmlWriter()->startElement("citations");
@@ -347,17 +350,18 @@ class IssuesXmlBuilder extends XMLBuilder {
                 $this->getXmlWriter()->endElement();
             }
             $this->getXmlWriter()->endElement();
-        }		
+        }
+		
 	}
+	
 
     /**
      * Writes out publication metadata, including, title, abstract, keywords, etc.
-     * Called by writePublication()
-     * xmlFormat() is used to escape special characters (see helpers.php)
+     *
      * @param array $articleData
      */
     function writePublicationMetadata($articleData) {
-        //DOI
+
         $doi = trim($articleData["DOI"]);
         if ($doi != "") {
             $this->getXmlWriter()->startElement("id");
@@ -366,7 +370,7 @@ class IssuesXmlBuilder extends XMLBuilder {
             $this->getXmlWriter()->writeRaw(xmlFormat($doi));
             $this->getXmlWriter()->endElement();
         }
-        // title
+
         $this->getXmlWriter()->startElement("title");
         $this->addLocaleAttribute();
         $this->getXmlWriter()->writeRaw(xmlFormat(trim($articleData["articleTitle"])));
@@ -396,7 +400,9 @@ class IssuesXmlBuilder extends XMLBuilder {
 			$this->addLocaleAttribute($articleData["locale_2"]);
 			$this->getXmlWriter()->writeRaw(xmlFormat( trim($articleData["articleAbstract_2"]) ));
 			$this->getXmlWriter()->endElement(); 
-		}		
+		}
+		
+		
 		
 		$this->getXmlWriter()->startElement("licenseUrl");        
         $this->getXmlWriter()->writeRaw(xmlFormat(trim($articleData["licenseUrl"])));
@@ -413,6 +419,8 @@ class IssuesXmlBuilder extends XMLBuilder {
 			$this->getXmlWriter()->endElement();
 		}
 		
+		
+
         if (semiColonFix($articleData["keywords"] != "")) {
             $keywordArray = parseSemiColon($articleData["keywords"]);
             $this->getXmlWriter()->startElement("keywords");
@@ -424,6 +432,11 @@ class IssuesXmlBuilder extends XMLBuilder {
             }
             $this->getXmlWriter()->endElement();
         }
+		
+		
+		
+		
+		
     }
 
     /**
@@ -498,7 +511,7 @@ class IssuesXmlBuilder extends XMLBuilder {
         $fileName = $articleData["fileName"];
         $fileExt = get_file_extension($fileName);
         // Disabled for OJS 3.2
-        // $pdfUrl = Config::get("pdf_url");
+//        $pdfUrl = Config::get("pdf_url");
 
         $this->getXmlWriter()->startElement("article_galley");
         $this->getXmlWriter()->writeAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
@@ -522,9 +535,9 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->endElement();
 
         // Disabled for OJS 3.2
-        // $this->getXmlWriter()->startElement("remote");
-        // $this->getXmlWriter()->writeAttribute("src", $pdfUrl . xmlFormat($fileName));
-        // $this->getXmlWriter()->endElement();
+//        $this->getXmlWriter()->startElement("remote");
+//        $this->getXmlWriter()->writeAttribute("src", $pdfUrl . xmlFormat($fileName));
+//        $this->getXmlWriter()->endElement();
 
         $this->getXmlWriter()->endElement();
     }
@@ -541,6 +554,8 @@ class IssuesXmlBuilder extends XMLBuilder {
             $this->getXmlWriter()->writeAttribute("xsi:schemaLocation","http://pkp.sfu.ca native.xsd");
         }
     }
+
+
 
     /**
      * Writes an ID field for linking submissions/publications

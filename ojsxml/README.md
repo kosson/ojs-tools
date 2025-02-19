@@ -11,14 +11,14 @@ Note: This is NOT a comprehensive CSV to OJS XML conversion, and many fields are
 It must be mentioned, that the script needs the following packages to be installed so that SQLite3 is available, and the specific error is silenced.
 
 ```bash
-sudo apt install sqlite3 php-sqlite3
+sudo apt install sqlite3 php-sqlite3 
 ```
 
 It would be very useful to be mentioned that a prior check with `php -m` for the `xmlwriter` would eliminate the specific error concerning the module.
 If it is not installed, one should do the following on Ubuntu 24.04: 
 
 ```bash
-sudo apt install php8.3-mbstring php8.3-bcmath php8.3-zip php8.3-gd php8.3-curl php8.3-xml -y.
+sudo apt install php8.3-mbstring php8.3-bcmath php8.3-zip php8.3-gd php8.3-curl php8.3-xml php-cli unzip -y.
 ```
 
 ## Known Issues
@@ -85,6 +85,16 @@ The field `locale_2` should use the same format (i.e. `fr_CA`) that OJS uses for
 4. If you have cover images place them in the `issue_cover_images` directory.
 4. Run `php csvToXmlConverter.php issues ojs_username ./docroot/csv/abstracts ./docroot/output`.
 5. The XML file(s) will be output in the specified output directory (`docroot/output` directory in this case).
+
+You may copy by hand all the resources in their indicated places, but if you have structured a subdirectory with all the article PDFs and the CSV file, you may use the `process-issue.sh` Bash script that will do all the heavy lifting for you:
+- copying the PDFs to the `article_galleys` directory;
+- extracting the first page of each PDF file as cover image and place it to the `issue_cover_images` directory;
+- copying the CSV file in the `/docroot/csv/abstracts` subdirectory, and;
+- running the php command that will create the XML file in the `docroot/output` directory.
+
+At the moment of running the command, the process will ask you to give it the full path (not the relative) of the directory whre the CSV and the PDFs are located. After you give the correct path, the magic will happen.
+
+Before using this script, rename the `dot.env` file to `.env`, open it and modify the `BASE_PATH` value according to your environment.
 
 ### User CSVs
 
@@ -354,3 +364,10 @@ is34 = True
 ; plugins/importexport/native/filter/NativeXmlIssueFilter.php
 ; on lines 340 and 347 are required (casts to float and int respectively)
 ```
+
+## Modifications
+
+19 Feb, 2025
+
+- ojsxml code was refactored to use Composer. Now you may launch the command from anywhere you like (as part of scripts)
+- `process-issue.sh` Bash script will do all the heavy lifting for you, and skip all the boring steps. See in documentation above

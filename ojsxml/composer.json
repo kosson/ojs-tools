@@ -1,0 +1,9 @@
+{
+    "name": "kosson/ojsxml",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "OJSXml\\": "src/"
+        }
+    }
+}

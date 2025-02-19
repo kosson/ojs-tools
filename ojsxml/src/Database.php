@@ -1,8 +1,5 @@
 <?php
-
-
 namespace OJSXml;
-
 
 interface Database
 {
@@ -11,6 +8,4 @@ interface Database
     public function rowCount();
     public function execute();
     public function bind($param, $value, $type = null);
-
-
 }

@@ -1,9 +1,5 @@
 <?php
-
-
 namespace OJSXml;
-
-
 
 use Exception;
 

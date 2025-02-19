@@ -1,8 +1,5 @@
 <?php
-
-
 namespace OJSXml;
-
 
 class Config {
     static private $data;

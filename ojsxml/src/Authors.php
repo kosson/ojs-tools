@@ -5,7 +5,6 @@
  */
 namespace OJSXml;
 
-
 class Authors
 {
 

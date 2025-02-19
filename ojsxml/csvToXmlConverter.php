@@ -1,8 +1,20 @@
 <?php
-
 namespace OJSXml;
 
-require("./app/bootstrap.php");
+require 'vendor/autoload.php';
+
+// csvToXmlConverter.php
+require_once __DIR__ . '/config.php'; // Include config.php first
+
+// require_once OJSXML_ROOT . "/app/bootstrap.php";
+
+use OJSXml\Config;
+Config::load(OJSXML_ROOT . "/config.ini"); // Absolute path for config.ini
+
+require_once __DIR__ . '/src/helpers/helpers.php';
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 class csvToXmlConverter {
 
@@ -53,7 +65,6 @@ class csvToXmlConverter {
             echo "[Error]: <destination_directory> must be a valid directory" . PHP_EOL;
             exit();
         }
-
     }
 
     /**
@@ -88,8 +99,8 @@ class csvToXmlConverter {
 
         Logger::writeOut($this->_command, $this->_user);
     }
-
-    /**
+    
+     /**
      * Converts issue CSV data to OJS Native XML files
      *
      * @param string $sourceDir Location of CSV files
@@ -120,7 +131,6 @@ class csvToXmlConverter {
             $xmlBuilder->setIteration($i);
             $xmlBuilder->buildXml();
         }
-
         Logger::print("----------------------------------------");
         Logger::print("Successfully converted {$issueCount} issue(s).");
     }

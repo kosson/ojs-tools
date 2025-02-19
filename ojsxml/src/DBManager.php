@@ -1,6 +1,4 @@
 <?php
-
-
 namespace OJSXml;
 
 use OJSXml\DatabaseFactory;
@@ -42,7 +40,6 @@ class DBManager {
     public function getIssueCount() {
         $issueCountQuery = "SELECT count(*) as issueCount FROM (SELECT DISTINCT issueTitle, volume, issue FROM " . $this->_temp_table_name . ")";
         return $this->_db->single($issueCountQuery)['issueCount'];
-
     }
 
     /**

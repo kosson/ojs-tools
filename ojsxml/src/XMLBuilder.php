@@ -1,6 +1,4 @@
 <?php
-
-
 namespace OJSXml;
 
 use XMLWriter;

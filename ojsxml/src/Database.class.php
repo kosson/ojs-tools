@@ -2,7 +2,6 @@
 /**
  * Taken from: http://culttt.com/2012/10/01/roll-your-own-pdo-php-class/
  */
-
 namespace OJSXml;
 
 use \PDO;

@@ -1,8 +1,5 @@
 <?php
-
-
 namespace OJSXml;
-
 
 use DateTime;
 use DateTimeZone;

@@ -1,8 +1,5 @@
 <?php
-
-
 namespace OJSXml;
-
 
 class UsersXmlBuilder extends XMLBuilder {
 
@@ -36,7 +33,6 @@ class UsersXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->startElement("users");
 
         foreach ($this->_data as $userData) {
-            // var_dump($userData);
             $this->writeUser($userData);
         }
 
