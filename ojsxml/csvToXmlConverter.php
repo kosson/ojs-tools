@@ -16,6 +16,11 @@ require_once __DIR__ . '/src/helpers/helpers.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+/**
+ * Class csvToXmlConverter
+ * 
+ * Converts CSV data to OJS XML format.
+ */
 class csvToXmlConverter {
 
     var $_command;
@@ -107,13 +112,14 @@ class csvToXmlConverter {
      * @param string $destinationDir Target directory for XML files
      */
     private function generateIssuesXml($sourceDir, $destinationDir) {
+        // First import the CSV data into the database
         $dbManager = new DBManager();
         $dbManager->importIssueCsvData($sourceDir . "/*");
 
-        $issueCoversDir = $sourceDir . "/issue_cover_images/";
+        $issueCoversDir = $sourceDir . "/issue_cover_images/"; // set cover image directory for the articles of the issue
         $issueCount = $dbManager->getIssueCount();
 
-        $articleGalleysDir = $sourceDir . "/article_galleys/";
+        $articleGalleysDir = $sourceDir . "/article_galleys/"; // set article galley directory
 
         Logger::print("Running issue CSV-to-XML conversion...");
         Logger::print("----------------------------------------");
@@ -122,13 +128,14 @@ class csvToXmlConverter {
             $fileName = "issues_" . formatOutputFileNumber($issueCount, $i) . ".xml";
             Logger::print("===== " . $fileName . " =====");
 
+            // Create XML file
             $xmlBuilder = new IssuesXmlBuilder(
                 $destinationDir . "/" . $fileName,
                 $dbManager,
                 $issueCoversDir,
                 $articleGalleysDir,
                 $this->_user);
-            $xmlBuilder->setIteration($i);
+            $xmlBuilder->setIteration($i); // set iteration to the current issue processing
             $xmlBuilder->buildXml();
         }
         Logger::print("----------------------------------------");
@@ -140,6 +147,7 @@ class csvToXmlConverter {
      *
      * @param string $sourceDir Location of CSV files
      * @param string $destinationDir Target directory for XML files
+     * @param bool $isTest Flag to indicate if test mode is enabled
      */
     private function generateUsersXml($sourceDir, $destinationDir, $isTest = false) {
         $files = glob($sourceDir . "/*");

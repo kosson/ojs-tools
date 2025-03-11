@@ -423,4 +423,5 @@ is34 = True
 
 11 Mar, 2025
 
-- ojsxml README has been completed with the necessary steps to be taken in order to import the XML file in OJS.
+- ojsxml README has been completed with the necessary steps to be taken in order to import the XML file in OJS;
+- fixed generating the cover of the issue. It was not available and the function `writeIssueCover` is missleading, so renamed to `writeArticleCover`. A new `writeIssueCover` function created (see IssuesXmlBuilder.php FIXME).

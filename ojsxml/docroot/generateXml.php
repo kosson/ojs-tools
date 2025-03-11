@@ -1,6 +1,5 @@
 <?php
 
-
 require 'bootstrap.php';
 
 use OJSXml\TempTable;
@@ -11,21 +10,16 @@ $tempTable->truncate();
 $files = glob("./csv/abstracts/*");
 $fileCount = 0;
 
-
 /* 
   Loop for each csv file. If there is more then 1 csv file the output directory will be as 1.xml, 2.xml etc for each csv file.
 */
 foreach ($files as $filepath) {
     $fileCount +=1;
-
     $count = 0;
     $data = csv_to_array($filepath,",");
-
-
     foreach($data as $row){
             $tempTable->insertAssocDataIntoTempTable($row);
     }
-
 }
 
 $issueCountQuery = "SELECT count( distinct issueTitle) as issueCount FROM " . $TEMP_TABLE_NAME  ;
@@ -37,7 +31,6 @@ if($issueCount['issueCount']==0){
     echo "Error Number of issues found is 0\n";
     exit();
 }
-
 
 for($i = 0; $i < $issueCount['issueCount']; $i++ ){
 
@@ -55,6 +48,7 @@ for($i = 0; $i < $issueCount['issueCount']; $i++ ){
         }
        // print_r($issueRows);
 
+        // The XML output file is created here
         $xmlWriter = new XMLWriter();
         $xmlWriter->openURI("output/" . $i . ".xml");
         $xmlWriter->startDocument();
@@ -64,31 +58,31 @@ for($i = 0; $i < $issueCount['issueCount']; $i++ ){
         $xmlWriter->writeAttribute("xmlns","http://pkp.sfu.ca");
         $xmlWriter->writeAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
         $xmlWriter->writeAttribute("xsi:schemaLocation","http://pkp.sfu.ca native.xsd");
-
-
         
         foreach ($issueRows as $r) {
-            $xmlWriter->startElement("issue");
+
+            // ISSUE
+            $xmlWriter->startElement("issue"); // <issue>
             include ('inc/issuerows.inc.php');
 
             /**
              * SECTION
              */
-            $q_getSection ="SELECT sectionTitle,sectionAbbrev FROM  " . $TEMP_TABLE_NAME .
-                " WHERE trim(issueTitle) = :issueTitle group by sectionTitle, sectionAbbrev ";
+            $q_getSection = "SELECT sectionTitle,sectionAbbrev FROM  " . $TEMP_TABLE_NAME . " WHERE trim(issueTitle) = :issueTitle group by sectionTitle, sectionAbbrev ";
             $db->query($q_getSection);
            // echo $q_getSection . "<br>";
             echo "issueTitle = " . $r['issueTitle'] . "\n";
             $db->bind(":issueTitle", trim($r['issueTitle']));
             $sectionRows = $db->resultset();
 
-            $xmlWriter->startElement("sections");
+            // SECTIONS
+            $xmlWriter->startElement("sections");   // <sections>
             $sectionAbbreviations = null;
             foreach ($sectionRows as $sectionRow) {
                 include('inc/sectionrows.inc.php');
                 $sectionAbbreviations[] = $sectionRow['sectionAbbrev'];
             }
-            $xmlWriter->endElement(); // </sections>
+            $xmlWriter->endElement();               // </sections>
             
             
             if( trim($r['cover_image_filename']) != ''){            
@@ -98,11 +92,9 @@ for($i = 0; $i < $issueCount['issueCount']; $i++ ){
             /**
              * ARTICLE
              */
-            $xmlWriter->startElement("articles");
+            $xmlWriter->startElement("articles"); // <articles>
            
             foreach($sectionAbbreviations as $key => $sectionAbbrev){
-                
-                
                 
                 $sectionQuery = "SELECT issueTitle, sectionTitle,sectionAbbrev, supplementary_files, dependent_files , authors, affiliations, DOI, articleTitle, subTitle, 
                 year, 	(datePublished) datePublished,	volume, 
@@ -114,13 +106,10 @@ for($i = 0; $i < $issueCount['issueCount']; $i++ ){
                 $db->bind(":issueTitle", $r['issueTitle']);
                 $db->bind(":sectionAbbrev", $sectionAbbrev);
 
-
-
                 $articleRows = $db->resultset();
                 //echo $sectionQuery;
                 //echo "<br> Article -- <br>";
                 //echo pre($articleRows);
-
                 
                 foreach ($articleRows as $articleRow) {
                     $submission_id += 1;
@@ -130,17 +119,11 @@ for($i = 0; $i < $issueCount['issueCount']; $i++ ){
                 }
             }
             $xmlWriter->endElement(); // </articles>
-
-
             $xmlWriter->endElement(); // </issue>
-
         }
-
         $xmlWriter->endElement();  // end </issues>
-
 }
     $xmlWriter->endDocument();
     $xmlWriter->flush();
-
 
 echo "\nXML file(s) have been generated, please check the output folder.\n";
