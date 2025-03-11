@@ -52,7 +52,7 @@ php csvToXmlConverter issues username ./input_directory ./output_directory
 The CSV should contain the following headings:
 
 ```csv
-issueTitle,sectionTitle,sectionAbbrev,authors,affiliation,DOI,articleTitle,year,datePublished,volume,issue,startPage,endPage,articleAbstract,galleyLabel,authorEmail,fileName,keywords,citations,cover_image_filename,cover_image_alt_text,licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2
+issueTitle,sectionTitle,sectionAbbrev,authors,affiliation,orcid,DOI,articleTitle,year,datePublished,volume,issue,startPage,endPage,articleAbstract,galleyLabel,authorEmail,fileName,keywords,citations,cover_image_filename,cover_image_alt_text,issue_cover_image_filename,issue_cover_image_filename_alt_text,licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2
 ```
 
 You can have multiple authors in the "authors" field by separating them with a semi-colon. Also, use a comma to separating first and last names.
@@ -72,6 +72,8 @@ DOI, volume, issue, subtitle, keywords, citations, affiliation, cover image (bot
 
 In May, 2024 some fields were added for basic multilingual support. The extra fields are: `locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`.
 The field `locale_2` should use the same format (i.e. `fr_CA`) that OJS uses for it's `locale="en"` attribute.
+
+In March, 2025 fields `issue_cover_image_filename`, `issue_cover_image_filename_alt_text` and `orcid` were added. The first two are repeated accross the CSV records. The `orcid` should be a URL. In case of many authors, ORCIDs should be separated with `;` in the order of author completition.
 
 #### Instructions
 
