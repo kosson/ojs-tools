@@ -85,7 +85,7 @@ class IssuesXmlBuilder extends XMLBuilder {
     }
 
     /**
-     * Writes issue metadata including, volume, issue, date, title
+     * Writes issue metadata including, volume, issue, date, title, issue cover image
      *
      * @param array $issueData Metadata about a single issue
      */
@@ -197,8 +197,8 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->writeRaw($issueData["issue_cover_image_filename"]);
         $this->getXmlWriter()->endElement();
 
-        $this->getXmlWriter()->startElement("issue_cover_image_filename_alt_text");
-        $this->getXmlWriter()->writeRaw(xmlFormat($issueData["issue_cover_image_filename_alt_text"]));
+        $this->getXmlWriter()->startElement("cover_image_alt_text");
+        $this->getXmlWriter()->writeRaw(xmlFormat($issueData["issue_cover_image_alt_text"]));
         $this->getXmlWriter()->endElement();
 
         $this->getXmlWriter()->startElement("embed");
