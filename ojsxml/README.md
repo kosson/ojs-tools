@@ -15,7 +15,7 @@ sudo apt install sqlite3 php-sqlite3
 ```
 
 It would be very useful to be mentioned that a prior check with `php -m` for the `xmlwriter` would eliminate the specific error concerning the module.
-If it is not installed, one should do the following on Ubuntu 24.04: 
+If it is not installed, one should do the following on Ubuntu 24.04:
 
 ```bash
 sudo apt install php8.3-mbstring php8.3-bcmath php8.3-zip php8.3-gd php8.3-curl php8.3-xml php-cli unzip -y.
@@ -70,9 +70,7 @@ The following fields are optional and can be left empty:
 DOI, volume, issue, subtitle, keywords, citations, affiliation, cover image (both cover_image_filename and cover_image_alt_text must be included or omitted),licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2
 ```
 
-#### Update May 2024
-
-Added extra fields for basic multilingual support. The extra fields are: `locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`.
+In May, 2024 some fields were added for basic multilingual support. The extra fields are: `locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`.
 The field `locale_2` should use the same format (i.e. `fr_CA`) that OJS uses for it's `locale="en"` attribute.
 
 #### Instructions
@@ -158,7 +156,7 @@ At least one `user_group` must be included inside the `user_groups` tag. The `us
 </user_group>
 ```
 
-## Hack your way
+## Hack your way to do the import
 
 First, upload the users of the issue you want to upload. You'll need it latter to assign as primary contacts. The best practice would be to have all the authors as users in a curated XML file already imported. Make sure your application uses workers. In large numbers, the uploads will be done partially. For example, from two hundred users, only a few dozens will be imported... mind this gap. For safety, use workers administrated by Supervisor. See the official documentation. Check the
 
@@ -175,11 +173,31 @@ max_file_uploads = 100
 error_log = php_errors.log
 ```
 
-It will avoid bamboozeled frustrated red face.
+The increased values for RAM will avoid bamboozeled frustrated red face.
+Remember to restart the PHP service after doing the modificat`sudo service php8.2-fpm restart`ions:
+
+```bash
+sudo systemctl restart php8.2-fpm
+```
+
+If you application is managed via Supervisor, you may restart the service with the following command:
+
+```bash
+sudo supervisorctl restart all
+```
 
 ### Avoid $setsequence wrong type
 
-If you would like to import your issue, first error that appears is linked to a bad type in code. The error will be the following:
+Unfortunatelly the application is not ready for the import of the XML file as is. It needs a bit of tinkering first as folows.
+Lines 340 and 377 of the original file `NativeXmlIssueFilter.php` must be modified prior any attempt of upload.
+
+Edit the file:
+
+```bash
+sudo nano -l /var/www/<name.ofthe.journal.io>/plugins/importexport/native/filter/NativeXmlIssueFilter.php
+```
+
+where `<name.ofthe.journal.io>` is the name of the journal you are working on. This is necessary to avoid the following error:
 
 ```txt
 ## Errors occured:
@@ -187,12 +205,26 @@ Generic Items
 - PKP\section\PKPSection::setSequence(): Argument #1 ($sequence) must be of type float, string given, called in /var/www/revue.of.lis/plugins/importexport/native/filter/NativeXmlIssueFilter.php on line 340
 ```
 
-Now, you need to modify `plugins/importexport/native/filter/NativeXmlIssueFilter.php` at line 340.
-The fragment `$section->setSequence($node->getAttribute('seq'));` must be modified to `$section->setSequence(floatval($node->getAttribute('seq')));`. Function `floatval` wrapping will ensure correct casting. The same thing must be done on line 347 `$section->setAbstractWordCount(floatval($node->getAttribute('abstract_word_count')));` to avoid the following error:
+Edit the fragment `$section->setSequence($node->getAttribute('seq'));` on the line 340, and modify it as follows:
+
+```php
+$section->setSequence(floatval($node->getAttribute('seq')));
+```
+
+Function `floatval` wrapping will ensure correct casting.
+Edit the line 347, and modify it as follows:
+
+```php
+$section->setAbstractWordCount(floatval($node->getAttribute('abstract_word_count')));
+```
+
+to avoid the following error:
 
 ```txt
-APP\section\Section::setAbstractWordCount(): Argument #1 ($wordCount) must be of type int, string given, called in /var/www/journals.unibuc.ro/plugins/importexport/native/filter/NativeXmlIssueFilter.php on line 347
+APP\section\Section::setAbstractWordCount(): Argument #1 ($wordCount) must be of type int, string given, called in /var/www/<name.ofthe.journal.io>/plugins/importexport/native/filter/NativeXmlIssueFilter.php on line 347
 ```
+
+Now you are ready to make the next step which involves modifications to the database, unfortunatelly. No biggie, though.
 
 ### The integrity constraint violation
 
@@ -275,9 +307,10 @@ tools/importExport.php NativeImportExportPlugin import [xmlFileName] [journal_pa
 	issue_id [issueId] section_abbrev [abbrev]
 ```
 
-Now you are free to upload and import the XML issue file you have created. For the big file uploads (base64 encoding of "heavy" PDFs) do not use the GUI. Resource to the script available in the `tools` subdirectory of the application. 
+#### Do the import
 
-Let's get grindig. Positioned in the root of the application, issue the following command in terminal:
+Now you are free to upload and import the XML issue file you have created. For the big file uploads (base64 encoding of "heavy" PDFs) do not use the GUI. Resource to the script available in the `tools` subdirectory of the application.
+Let's get grindig. Position yourself in the root of the application, and issue the following command in the terminal:
 
 ```bash
 sudo php tools/importExport.php NativeImportExportPlugin import issues_0.xml ahbb --user_name master
@@ -371,3 +404,7 @@ is34 = True
 
 - ojsxml code was refactored to use Composer. Now you may launch the command from anywhere you like (as part of scripts)
 - `process-issue.sh` Bash script will do all the heavy lifting for you, and skip all the boring steps. See in documentation above
+
+11 Mar, 2025
+
+- ojsxml README has been completed with the necessary steps to be taken in order to import the XML file in OJS.
