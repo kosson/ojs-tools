@@ -118,6 +118,7 @@ NB: If a temporary password is not supplied, a new password will be created and 
 The `user_groups` section of the XML is specific to each journal and should therefore be taken from a sample user export from the intended journal. Any role added in the import CSV must match the `name` tag for the given user group or it will default to `Reader`.
 
 Current valid roles include:
+
 - Journal manager
 - Section editor
 - Reviewer
@@ -174,7 +175,7 @@ error_log = php_errors.log
 ```
 
 The increased values for RAM will avoid bamboozeled frustrated red face.
-Remember to restart the PHP service after doing the modificat`sudo service php8.2-fpm restart`ions:
+Remember to restart the PHP service after doing the modifications:
 
 ```bash
 sudo systemctl restart php8.2-fpm
@@ -249,11 +250,15 @@ This one is tricky because you have to delete the constraint between the `public
 ![](doc/img/FK-publications_primary_contact_id.png)
 
 Then you need to destroy the foreign key connection from the `authors` table as well. If you do not operate these modifications, you cannot make the import in OJS 3.4.0.8 version, at least.
-
 For making the modifications, [DBeaver Community](https://dbeaver.io/) was used being configured to access the database via ssh. Do not edit the database without a backup first. The modifications were applied to a virtualized copy of the OJS multijournal application.
 
 Delete the `publications_primary_contact_id` from `Foreign keys` belonging to the `publications` table.
-Delete the `authors_publication_id_foreign` from `Foreign keys` belonging to the `authors` table.
+Delete the `authors_publication_id_foreign` from `Foreign keys` belonging to the `authors` table.  In a simple SQL script, the following commands are enough.
+
+```sql
+ALTER TABLE `authors` DROP FOREIGN KEY `authors_publications_id_foreign`;
+ALTER TABLE `publications` DROP FOREIGN KEY `publications_primary_contact_id`;
+```
 
 ### Upload using the CLI tools
 
@@ -307,10 +312,12 @@ tools/importExport.php NativeImportExportPlugin import [xmlFileName] [journal_pa
 	issue_id [issueId] section_abbrev [abbrev]
 ```
 
+Now you are in business. Proced to the PHP command.
+
 #### Do the import
 
-Now you are free to upload and import the XML issue file you have created. For the big file uploads (base64 encoding of "heavy" PDFs) do not use the GUI. Resource to the script available in the `tools` subdirectory of the application.
-Let's get grindig. Position yourself in the root of the application, and issue the following command in the terminal:
+Now you are free to upload and import the XML issue file you have created. For the big file uploads (base64 encoding of "heavy" PDFs) do not use the GUI. Resource to the script available in the `tools` subdirectory of the original OJS application.
+Let's get grinding. Position yourself in the root of the application, and issue the following command in the terminal:
 
 ```bash
 sudo php tools/importExport.php NativeImportExportPlugin import issues_0.xml ahbb --user_name master
@@ -345,7 +352,16 @@ And for all the articles in the issue:
 Observe how `primary_contact_id` column gets populated with the correspondent values.
 All this implies a downtime needed of the app for safety reasons. You may try it on the fly on the production machine, but I would strongly not advice such move. Better safe than sorry.
 
-After you finished your import, redo all the links you've just destroyed.
+After you finished your import, redo all the links you've just destroyed. A simple SQL script as following.
+
+```sql
+ALTER TABLE journalsunibuc.authors ADD CONSTRAINT authors_publications_id_foreign FOREIGN KEY (publication_id) REFERENCES journalsunibuc.publications(publication_id) ON DELETE CASCADE ON UPDATE RESTRICT;
+ALTER TABLE journalsunibuc.publications ADD CONSTRAINT publications_primary_contact_id FOREIGN KEY (primary_contact_id) REFERENCES journalsunibuc.authors(author_id) ON DELETE SET NULL ON UPDATE RESTRICT;
+```
+
+You could redo the connections manualy, but after doing this for a few rounds, it gets tedious.
+
+Provided all went well, you have successfuly imported a whole issue.
 
 ## Annex 1
 
