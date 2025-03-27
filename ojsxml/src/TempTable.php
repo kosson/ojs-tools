@@ -44,7 +44,7 @@ class TempTable
                       `sectionAbbrev` varchar(500)  DEFAULT NULL,
                       `authors` varchar(500)  DEFAULT NULL, 
                       `affiliations` varchar(500) DEFAULT NULL, 
-                      `orcid` varchar (500) DEFAULT NULL,
+                      `orcid` varchar (1500) DEFAULT NULL,
                       `DOI` varchar(500) DEFAULT NULL,                       
                       `articleTitle` varchar(500)  DEFAULT NULL, 
                       `subTitle` varchar(500)  DEFAULT NULL, 
@@ -91,22 +91,23 @@ class TempTable
                               :authorEmail,:fileName,:supplementary_files,:dependent_files,:keywords,:citations,:cover_image_filename,:cover_image_alt_text,:issue_cover_image_filename,:issue_cover_image_alt_text,:language,:licenseUrl,:copyrightHolder,:copyrightYear,
 							  :locale_2, :issueTitle_2, :sectionTitle_2, :articleTitle_2, :articleAbstract_2)";
         $this->db->query($sql);
-        $this->db->bind(':issueTitle', $data['issueTitle']??'');
+        $this->db->bind(':issueTitle', $data['issueTitle'] ?? '');
         $this->db->bind(':sectionTitle', $data['sectionTitle']);
         $this->db->bind(':sectionAbbrev', $data['sectionAbbrev']);
         $this->db->bind(':authors', $data['authors']);
 
         if(isset($data['affiliation']) || isset($data['affiliations'])){
-            $this->db->bind(':affiliations', (isset($data['affiliation'])?$data['affiliation']:$data['affiliations']));
+            $this->db->bind(':affiliations', (isset($data['affiliation']) ? $data['affiliation'] : $data['affiliations']));
         } elseif (isset($data['authorAffiliation'])){
             $this->db->bind(':affiliations', $data['authorAffiliation']);
         } else {
             $this->db->bind(':affiliations', '');
         }
-        $this->db->bind(':orcid', $data['orcid']);
-        $this->db->bind(':DOI', $data['DOI']??'');
+
+        $this->db->bind(':orcid', $data['orcid'] ?? ''); // may have an ORCIDs or not
+        $this->db->bind(':DOI', $data['DOI'] ?? '');
         $this->db->bind(':articleTitle', $data['articleTitle']);
-        $this->db->bind(':subTitle', $data['subTitle']??'');
+        $this->db->bind(':subTitle', $data['subTitle'] ?? '');
         $this->db->bind(':year', $data['year']);
         $this->db->bind(':datePublished', $data['datePublished']);
         $this->db->bind(':volume', $data['volume']);
@@ -114,45 +115,44 @@ class TempTable
         $this->db->bind(':startPage', $data['startPage']);
         $this->db->bind(':endPage', $data['endPage']);
 
-		$articleAbstract = isset($data['articleAbstract']) ? $data['articleAbstract'] : "";
+		$articleAbstract = isset($data['articleAbstract']) ? $data['articleAbstract'] : '';
         $this->db->bind(':articleAbstract', $articleAbstract);
         $this->db->bind(':galleyLabel', $data['galleyLabel']);
         $this->db->bind(':authorEmail', $data['authorEmail']);
         $this->db->bind(':fileName', $data['fileName']);
-        $this->db->bind(':supplementary_files', $data['supplementary_files'] ?? "");
-        $this->db->bind(':dependent_files', $data['dependent_files']?? '' );
+        $this->db->bind(':supplementary_files', $data['supplementary_files'] ?? '');
+        $this->db->bind(':dependent_files', $data['dependent_files'] ?? '');     
 
         $val = "";
+
         if(key_exists('keywords',$data)){
             $val = $data['keywords'];
         }
         $this->db->bind(':keywords',$val);
 		
 		$cval = "";
+
         if(key_exists('citations',$data)){
             $cval = $data['citations'];
         }
         
-		$this->db->bind(':citations',$cval);
-        $this->db->bind(':cover_image_filename', $data['cover_image_filename'] ?? "");
-        $this->db->bind(':cover_image_alt_text', $data['cover_image_alt_text'] ?? "");
-        $this->db->bind(':issue_cover_image_filename', $data['issue_cover_image_filename'] ?? "");
-        $this->db->bind(':issue_cover_image_alt_text', $data['issue_cover_image_alt_text'] ?? "");
-        $this->db->bind(':language', $data['language']??'');
-		$this->db->bind(':licenseUrl', $data['licenseUrl']??'');
-		$this->db->bind(':copyrightHolder', $data['copyrightHolder']??'');
-		$this->db->bind(':copyrightYear', $data['copyrightYear']??'');
-		
-		$this->db->bind(':copyrightYear', $data['copyrightYear']??'');
+		$this->db->bind(':citations', $cval);
+        $this->db->bind(':cover_image_filename', $data['cover_image_filename'] ?? '');
+        $this->db->bind(':cover_image_alt_text', $data['cover_image_alt_text'] ?? '');        
+        $this->db->bind(':issue_cover_image_filename', $data['issue_cover_image_filename'] ?? ''); // may exist or not
+        $this->db->bind(':issue_cover_image_alt_text', $data['issue_cover_image_alt_text'] ?? '');   
+        $this->db->bind(':language', $data['language'] ?? '');
+		$this->db->bind(':licenseUrl', $data['licenseUrl'] ?? '');
+		$this->db->bind(':copyrightHolder', $data['copyrightHolder'] ?? '');
+		$this->db->bind(':copyrightYear', $data['copyrightYear'] ?? '');
 		
 		/*  Second Locale */
-		$this->db->bind(':locale_2', $data['locale_2']??'');        
-		$this->db->bind(':issueTitle_2', $data['issueTitle_2']??'');
-		$this->db->bind(':sectionTitle_2', $data['sectionTitle_2']??'');		 
-        $this->db->bind(':articleTitle_2', $data['articleTitle_2']??'');
-		$this->db->bind(':articleAbstract_2', $data['articleAbstract_2']??'');
+		$this->db->bind(':locale_2', $data['locale_2'] ?? '');        
+		$this->db->bind(':issueTitle_2', $data['issueTitle_2'] ?? '');
+		$this->db->bind(':sectionTitle_2', $data['sectionTitle_2'] ?? '');		 
+        $this->db->bind(':articleTitle_2', $data['articleTitle_2'] ?? '');
+		$this->db->bind(':articleAbstract_2', $data['articleAbstract_2'] ?? '');
         
         $this->db->execute();
     }
-
 }

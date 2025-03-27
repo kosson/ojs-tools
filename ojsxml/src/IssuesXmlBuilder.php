@@ -16,6 +16,7 @@ class IssuesXmlBuilder extends XMLBuilder {
     private array $_sectionAbbreviations = array();
     private int $_iteration = 0;
     private string $_issueCoversDir;
+    private string $_issueCoverDir; //FIXME: _issueCoverDir TRACK it down
     private string $_articleGalleysDir;
     private string $_user;
     private int $_issueIdPrefix;
@@ -29,9 +30,10 @@ class IssuesXmlBuilder extends XMLBuilder {
      * @param string $articleGalleysDir
      * @param string $user
      */
-    public function __construct($filePath, &$dbManager, $issueCoversDir, $articleGalleysDir, $user) {
+    public function __construct($filePath, &$dbManager, $issueCoversDir, $issueCoverDir, $articleGalleysDir, $user) {
         parent::__construct($filePath, $dbManager);
         $this->_issueCoversDir = $issueCoversDir;
+        $this->_issueCoverDir = $issueCoverDir; // the cover for the issue
         $this->_articleGalleysDir = $articleGalleysDir;
         $this->_user = $user;
     }

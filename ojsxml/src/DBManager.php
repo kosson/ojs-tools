@@ -50,7 +50,7 @@ class DBManager {
      */
     public function getIssuesData($iteration) {
         $issues_per_file = Config::get('issues_per_file');
-        $q_getIssues = "SELECT trim(issueTitle) as issueTitle, issue, year, volume, datePublished, cover_image_filename, cover_image_alt_text, locale_2, issueTitle_2 FROM " . $this->_temp_table_name . " Group by issueTitle, volume, issue order by volume limit " . ($iteration * $issues_per_file) ." ," . $issues_per_file;
+        $q_getIssues = "SELECT trim(issueTitle) as issueTitle, issue, year, volume, datePublished, cover_image_filename, cover_image_alt_text, issue_cover_image_filename, issue_cover_image_alt_text, locale_2, issueTitle_2 FROM " . $this->_temp_table_name . " Group by issueTitle, volume, issue order by volume limit " . ($iteration * $issues_per_file) ." ," . $issues_per_file;
         $this->_db->query($q_getIssues);
         return $this->_db->resultset();
     }
@@ -65,7 +65,7 @@ class DBManager {
     public function getSectionsData($issueTitle, $volume, $issue) {
         $volumeQueryPart = empty($volume) ? "" : " AND volume = :volume";
         $issueQueryPart = empty($issue) ? "" : " AND issue = :issue";
-        $q_getSection ="SELECT sectionTitle,sectionAbbrev, locale_2, sectionTitle_2 FROM  " . $this->_temp_table_name
+        $q_getSection = "SELECT sectionTitle, sectionAbbrev, locale_2, sectionTitle_2 FROM  " . $this->_temp_table_name
             . " WHERE (trim(issueTitle) = :issueTitle"
             . $volumeQueryPart . $issueQueryPart . ") group by sectionTitle, sectionAbbrev ";
 
@@ -95,10 +95,10 @@ class DBManager {
     public function getArticlesDataBySection($issueTitle, $volume, $issue, $sectionAbbrev) {
         $volumeQueryPart = empty($volume) ? "" : " AND trim(volume) = trim(:volume)";
         $issueQueryPart = empty($issue) ? "" : " AND trim(issue) = trim(:issue)";
-
-        $articlesBySectionQuery = "SELECT issueTitle, sectionTitle,sectionAbbrev, supplementary_files, 
-            dependent_files , authors, affiliations, DOI, articleTitle, subTitle, year, (datePublished) as datePublished,	
-            volume, issue, startPage, COALESCE(endPage,'') as endPage,  articleAbstract as abstract, galleyLabel, 
+        //FIXME: add orcid
+        $articlesBySectionQuery = "SELECT issueTitle, sectionTitle, sectionAbbrev, supplementary_files, 
+            dependent_files, authors, affiliations, DOI, orcid, articleTitle, subTitle, year, (datePublished) as datePublished,	
+            volume, issue, startPage, COALESCE(endPage,'') as endPage, articleAbstract as abstract, galleyLabel, 
             authorEmail, fileName, keywords, language, citations, licenseUrl, copyrightHolder, copyrightYear, 
 			locale_2,sectionTitle_2, issueTitle_2, articleTitle_2, articleAbstract_2
             FROM " . $this->_temp_table_name .

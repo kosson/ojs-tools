@@ -82,7 +82,7 @@ In March, 2025 fields `issue_cover_image_filename`, `issue_cover_image_filename_
    * The `abstracts` input directory must contain an `article_galleys` and `issue_cover_images` directory (both of which exist within `docroot/csv/abstracts`),
    * You can place multiple CSV files in the directory however do not split a single issue across multiple CSV files, but you can have multiple issues in a single CSV file.
 3. Place all PDF galleys in the `article_galleys` directory.
-4. If you have cover images place them in the `issue_cover_images` directory.
+4. If you have cover images place them in the `issue_cover_images` directory. Place the cover image for the issue in the `issue_cover_images` directory.
 4. Run `php csvToXmlConverter.php issues ojs_username ./docroot/csv/abstracts ./docroot/output`.
 5. The XML file(s) will be output in the specified output directory (`docroot/output` directory in this case).
 
@@ -427,3 +427,8 @@ is34 = True
 
 - ojsxml README has been completed with the necessary steps to be taken in order to import the XML file in OJS;
 - fixed generating the cover of the issue. It was not available and the function `writeIssueCover` is missleading, so renamed to `writeArticleCover`. A new `writeIssueCover` function created (see IssuesXmlBuilder.php FIXME).
+
+27 Mar, 2025
+
+- added the `orcid` field to the CSV file for the issues. The field is optional, and in case of many authors, ORCIDs should be separated with `;` in the order of author completition;
+- Place the cover image for the issue in the `issue_cover_images` directory. The cover image for the issue is repeated across the CSV records. The `issue_cover_image_filename` and `issue_cover_image_filename_alt_text` fields are optional. The script creates a correct `covers` element in the `<issue xmlns="http://pkp.sfu.ca" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" published="1">` element of the output file.

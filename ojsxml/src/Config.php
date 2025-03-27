@@ -11,5 +11,4 @@ class Config {
     static public function get($key) {
         return self::$data[$key];
     }
-
 }

@@ -25,10 +25,7 @@ class SQLiteDB implements Database
     }
 
     public function query($query){
-
-
         $this->stmt  = $this->handle->prepare($query);
-
     }
 
     /**
@@ -84,8 +81,4 @@ class SQLiteDB implements Database
     public function rowCount(){
         return $this->rowCount();
     }
-
-
-
-
 }
