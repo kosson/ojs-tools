@@ -16,7 +16,7 @@ class IssuesXmlBuilder extends XMLBuilder {
     private array $_sectionAbbreviations = array();
     private int $_iteration = 0;
     private string $_issueCoversDir;
-    private string $_issueCoverDir; //FIXME: _issueCoverDir TRACK it down
+    private string $_issueCoverDir;
     private string $_articleGalleysDir;
     private string $_user;
     private int $_issueIdPrefix;
@@ -184,10 +184,9 @@ class IssuesXmlBuilder extends XMLBuilder {
     }
 
     function writeIssueCover($issueData) {
-        //FIXME: the cover image of the issue is the first cover of the first article. It should be a distinct file mentioned in a distinct field in the CSV even if it is repeated to all the records?! The title of the method is misleading.
         if (trim($issueData["issue_cover_image_filename"] == "")) return;
 
-        $path = $this->_issueCoversDir . $issueData["issue_cover_image_filename"]; // the cover image of the issue will be found next to the CSV file in the csv subdirectory. Similar to: `ahbb-vol48-no1-2022-cover.jpg`. The info will be repeated for all the record in the CSV
+        $path = $this->_issueCoverDir . "/" .$issueData["issue_cover_image_filename"]; // the cover image of the issue will be found next to the CSV file in the csv subdirectory. Similar to: `ahbb-vol48-no1-2022-cover.jpg`. The info will be repeated for all the record in the CSV
         $data = file_get_contents($path);
         $coverImageBase64 = base64_encode($data);
 
@@ -296,13 +295,9 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->writeAttribute("current_publication_id", $articleData["currentId"]);
 
         $this->_writeIdElement($articleData["currentId"]);
-
         $this->_writeSubmissionFile($articleData);
-
         $this->writePublication($articleData);
-
         $this->getXmlWriter()->endElement();
-
     }
 
     function _writeSubmissionFile(array $articleData) {
@@ -339,10 +334,7 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->writeAttribute("encoding", "base64");
         $this->getXmlWriter()->writeRaw($articleGalleyBase64);
         $this->getXmlWriter()->endElement();
-
         $this->getXmlWriter()->endElement();
-
-
         $this->getXmlWriter()->endElement();
     }
 
@@ -367,13 +359,11 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->writeAuthors($articleData);
         $this->writeArticleGalley($articleData);
 		
-		$this->writeCitations($articleData["citations"]);
-		
+		$this->writeCitations($articleData["citations"]);		
 
         $this->getXmlWriter()->startElement("pages");
         $this->getXmlWriter()->writeRaw(trim($articleData["pages"], "-"));
         $this->getXmlWriter()->endElement();
-
         $this->getXmlWriter()->endElement();
     }
 	
@@ -391,10 +381,8 @@ class IssuesXmlBuilder extends XMLBuilder {
             }
             $this->getXmlWriter()->endElement();
         }
-		
 	}
 	
-
     /**
      * Writes out publication metadata, including, title, abstract, keywords, etc.
      *
@@ -442,8 +430,6 @@ class IssuesXmlBuilder extends XMLBuilder {
 			$this->getXmlWriter()->endElement(); 
 		}
 		
-		
-		
 		$this->getXmlWriter()->startElement("licenseUrl");        
         $this->getXmlWriter()->writeRaw(xmlFormat(trim($articleData["licenseUrl"])));
         $this->getXmlWriter()->endElement();
@@ -459,8 +445,6 @@ class IssuesXmlBuilder extends XMLBuilder {
 			$this->getXmlWriter()->endElement();
 		}
 		
-		
-
         if (semiColonFix($articleData["keywords"] != "")) {
             $keywordArray = parseSemiColon($articleData["keywords"]);
             $this->getXmlWriter()->startElement("keywords");
@@ -472,11 +456,6 @@ class IssuesXmlBuilder extends XMLBuilder {
             }
             $this->getXmlWriter()->endElement();
         }
-		
-		
-		
-		
-		
     }
 
     /**
@@ -551,7 +530,7 @@ class IssuesXmlBuilder extends XMLBuilder {
         $fileName = $articleData["fileName"];
         $fileExt = get_file_extension($fileName);
         // Disabled for OJS 3.2
-//        $pdfUrl = Config::get("pdf_url");
+        // $pdfUrl = Config::get("pdf_url");
 
         $this->getXmlWriter()->startElement("article_galley");
         $this->getXmlWriter()->writeAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
@@ -575,9 +554,9 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->endElement();
 
         // Disabled for OJS 3.2
-//        $this->getXmlWriter()->startElement("remote");
-//        $this->getXmlWriter()->writeAttribute("src", $pdfUrl . xmlFormat($fileName));
-//        $this->getXmlWriter()->endElement();
+        // $this->getXmlWriter()->startElement("remote");
+        // $this->getXmlWriter()->writeAttribute("src", $pdfUrl . xmlFormat($fileName));
+        // $this->getXmlWriter()->endElement();
 
         $this->getXmlWriter()->endElement();
     }
@@ -594,8 +573,6 @@ class IssuesXmlBuilder extends XMLBuilder {
             $this->getXmlWriter()->writeAttribute("xsi:schemaLocation","http://pkp.sfu.ca native.xsd");
         }
     }
-
-
 
     /**
      * Writes an ID field for linking submissions/publications

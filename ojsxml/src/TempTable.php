@@ -79,22 +79,16 @@ class TempTable
         $this->db->query($sql);
         $this->db->execute();
     }
-    
+
     function insertAssocDataIntoTempTable($data){
-        $sql = "INSERT into  " . $this->tempTableName . "
-                              (issueTitle,sectionTitle,sectionAbbrev,authors,affiliations,orcid,DOI,articleTitle,subTitle,`year`,datePublished,volume,issue,startPage,endPage,articleAbstract,galleyLabel,
-                              authorEmail,fileName,supplementary_files,dependent_files,keywords,citations,cover_image_filename,cover_image_alt_text,issue_cover_image_filename,issue_cover_image_alt_text,language,licenseUrl,copyrightHolder,copyrightYear,
-							  locale_2, issueTitle_2, sectionTitle_2, articleTitle_2, articleAbstract_2
-							  ) 
-                                VALUES (:issueTitle,:sectionTitle,:sectionAbbrev,:authors,:affiliations,:orcid,:DOI,:articleTitle,:subTitle,:year,:datePublished,
-                                :volume,:issue,:startPage,:endPage, :articleAbstract,:galleyLabel, 
-                              :authorEmail,:fileName,:supplementary_files,:dependent_files,:keywords,:citations,:cover_image_filename,:cover_image_alt_text,:issue_cover_image_filename,:issue_cover_image_alt_text,:language,:licenseUrl,:copyrightHolder,:copyrightYear,
-							  :locale_2, :issueTitle_2, :sectionTitle_2, :articleTitle_2, :articleAbstract_2)";
+        $sql = "INSERT into " . $this->tempTableName . "
+        (issueTitle,sectionTitle,sectionAbbrev,authors,affiliations,orcid,DOI,articleTitle,subTitle,year,datePublished,volume,issue,startPage,endPage,articleAbstract,galleyLabel,authorEmail,fileName,supplementary_files,dependent_files,keywords,citations,cover_image_filename,cover_image_alt_text,issue_cover_image_filename,issue_cover_image_alt_text,language,licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2) 
+        VALUES (:issueTitle,:sectionTitle,:sectionAbbrev,:authors,:affiliations,:orcid,:DOI,:articleTitle,:subTitle,:year,:datePublished,:volume,:issue,:startPage,:endPage, :articleAbstract,:galleyLabel,:authorEmail,:fileName,:supplementary_files,:dependent_files,:keywords,:citations,:cover_image_filename,:cover_image_alt_text,:issue_cover_image_filename,:issue_cover_image_alt_text,:language,:licenseUrl,:copyrightHolder,:copyrightYear,:locale_2,:issueTitle_2,:sectionTitle_2,:articleTitle_2, :articleAbstract_2)";
         $this->db->query($sql);
-        $this->db->bind(':issueTitle', $data['issueTitle'] ?? '');
-        $this->db->bind(':sectionTitle', $data['sectionTitle']);
-        $this->db->bind(':sectionAbbrev', $data['sectionAbbrev']);
-        $this->db->bind(':authors', $data['authors']);
+        $this->db->bind(':issueTitle', empty_string_if_null($data['issueTitle'])); // may exist or not
+        $this->db->bind(':sectionTitle', empty_string_if_null($data['sectionTitle'])); // may exist or not
+        $this->db->bind(':sectionAbbrev', empty_string_if_null($data['sectionAbbrev'])); // may exist or not
+        $this->db->bind(':authors', empty_string_if_null($data['authors']));
 
         if(isset($data['affiliation']) || isset($data['affiliations'])){
             $this->db->bind(':affiliations', (isset($data['affiliation']) ? $data['affiliation'] : $data['affiliations']));
@@ -104,24 +98,24 @@ class TempTable
             $this->db->bind(':affiliations', '');
         }
 
-        $this->db->bind(':orcid', $data['orcid'] ?? ''); // may have an ORCIDs or not
-        $this->db->bind(':DOI', $data['DOI'] ?? '');
-        $this->db->bind(':articleTitle', $data['articleTitle']);
-        $this->db->bind(':subTitle', $data['subTitle'] ?? '');
-        $this->db->bind(':year', $data['year']);
-        $this->db->bind(':datePublished', $data['datePublished']);
-        $this->db->bind(':volume', $data['volume']);
-        $this->db->bind(':issue', $data['issue'] ?? $data['Issue']);
-        $this->db->bind(':startPage', $data['startPage']);
-        $this->db->bind(':endPage', $data['endPage']);
+        $this->db->bind(':orcid', empty_string_if_null($data['orcid'])); // may have an ORCIDs or not
+        $this->db->bind(':DOI', empty_string_if_null($data['DOI']));
+        $this->db->bind(':articleTitle', empty_string_if_null($data['articleTitle']));
+        $this->db->bind(':subTitle', empty_string_if_null($data['subTitle']));
+        $this->db->bind(':year', empty_string_if_null($data['year']));
+        $this->db->bind(':datePublished', empty_string_if_null($data['datePublished']));
+        $this->db->bind(':volume', empty_string_if_null($data['volume']));
+        $this->db->bind(':issue', $data['issue'] ?? $data['Issue'] ?? '');
+        $this->db->bind(':startPage', empty_string_if_null($data['startPage']));
+        $this->db->bind(':endPage', empty_string_if_null($data['endPage']));
 
 		$articleAbstract = isset($data['articleAbstract']) ? $data['articleAbstract'] : '';
         $this->db->bind(':articleAbstract', $articleAbstract);
-        $this->db->bind(':galleyLabel', $data['galleyLabel']);
-        $this->db->bind(':authorEmail', $data['authorEmail']);
-        $this->db->bind(':fileName', $data['fileName']);
-        $this->db->bind(':supplementary_files', $data['supplementary_files'] ?? '');
-        $this->db->bind(':dependent_files', $data['dependent_files'] ?? '');     
+        $this->db->bind(':galleyLabel', empty_string_if_null($data['galleyLabel']));
+        $this->db->bind(':authorEmail', empty_string_if_null($data['authorEmail']));
+        $this->db->bind(':fileName', empty_string_if_null($data['fileName']));
+        $this->db->bind(':supplementary_files', empty_string_if_null($data['supplementary_files']));
+        $this->db->bind(':dependent_files', empty_string_if_null($data['dependent_files']));     
 
         $val = "";
 

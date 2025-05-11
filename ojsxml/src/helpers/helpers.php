@@ -175,17 +175,14 @@ function fileExtensionAppender($fileName, $desiredExtention='pdf'){
  * @copyright Copyright (c) 2010, Jay Williams
  * @license http://www.opensource.org/licenses/mit-license.php MIT License
  */
-function csv_to_array($filename='', $delimiter=',')
-{
+function csv_to_array($filename = '', $delimiter = ',') {
     if(!file_exists($filename) || !is_readable($filename) || is_dir($filename))
         return false;
 
     $header = null;
-    $data = array();
-    if (($handle = fopen($filename, 'r')) !== false)
-    {
-        while (($row = fgetcsv($handle, 10000, $delimiter,'"')) !== FALSE)
-        {
+    $data = array(); // Here is created the array to store the data inserted in the database and also to be used in the XML file
+    if (($handle = fopen($filename, 'r')) !== false) {
+        while (($row = fgetcsv($handle, 10000, $delimiter,'"')) !== FALSE) {
             $cleanedUpRow = removeZeroWidthSpaces($row);
             if (empty($cleanedUpRow[0])) continue;
 
@@ -250,8 +247,8 @@ function cleanAbstracts(&$dataArray) {
     str_replace($abstract,'<p>','<P>');
     str_replace($abstract, '</p>', '</P>');
 
-
     $newAbstract = '';
+    
     // 2) Handle extra open tags
     if ($openTagCount > $closeTagCount) {
         $paragraphs = explode('<p>', $abstract);
@@ -334,5 +331,9 @@ function formatOutputFileNumber($totalItemCount, $iteration) {
 
     return $outputPrefix . (string) $iteration;
 
+}
+
+function empty_string_if_null(?string $value) {
+    return $value ?? '';
 }
 ?>

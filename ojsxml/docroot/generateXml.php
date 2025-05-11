@@ -16,9 +16,9 @@ $fileCount = 0;
 foreach ($files as $filepath) {
     $fileCount +=1;
     $count = 0;
-    $data = csv_to_array($filepath,",");
+    $data = csv_to_array($filepath, ",");
     foreach($data as $row){
-            $tempTable->insertAssocDataIntoTempTable($row);
+        $tempTable->insertAssocDataIntoTempTable($row);
     }
 }
 

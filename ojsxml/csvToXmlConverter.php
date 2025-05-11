@@ -117,6 +117,7 @@ class csvToXmlConverter {
         $dbManager->importIssueCsvData($sourceDir . "/*");
 
         $issueCoversDir = $sourceDir . "/issue_cover_images/"; // set cover image directory for the articles of the issue
+        $issueCoverDir = $sourceDir; // set cover image directory for the issue cover image file
         $issueCount = $dbManager->getIssueCount();
 
         $articleGalleysDir = $sourceDir . "/article_galleys/"; // set article galley directory
@@ -133,6 +134,7 @@ class csvToXmlConverter {
                 $destinationDir . "/" . $fileName,
                 $dbManager,
                 $issueCoversDir,
+                $issueCoverDir,
                 $articleGalleysDir,
                 $this->_user);
             $xmlBuilder->setIteration($i); // set iteration to the current issue processing

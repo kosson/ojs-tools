@@ -6,8 +6,9 @@ fi
 
 # Set the directory containing the PDF files
 #pdf_directory="~/Downloads/PLATFORMA.EDITORIALA/DATE/DATA/DATA-PROCESSED/Annals of the University of Bucharest – Geography Series/2022" # Replace with the actual path to your PDF files
-# Prompt the user for the PDF directory
+# Prompt the user for the PDF directory and issue cover image file
 read -p "Enter the path to the PDF directory: " pdf_directory
+read -p "Enter the name of the issue cover image file: " issue_cover_image_file
 
 # Check if the directory exists
 if [ ! -d "$pdf_directory" ]; then
@@ -45,7 +46,7 @@ find "$jpg_output_directory" -mindepth 1 -not -name ".gitkeep" -delete
 find "$pdf_output_directory" -mindepth 1 -not -name ".gitkeep" -delete
 find "$csv_output_directory" -mindepth 1 -not -name ".gitkeep" -delete
 
-# Loop through all PDF files in the directory
+# Loop through all PDF files in the directory and generate JPEGs of the first page
 for pdf_file in "$pdf_directory"/*.pdf; do
   # Extract the filename without the extension
   filename=$(basename "$pdf_file" .pdf)
@@ -81,6 +82,20 @@ if [ $? -eq 0 ]; then
     echo "Copied CSV file: $csv_file -> $csv_output_directory"
 else
     echo "Error copying CSV file: $csv_file"
+    exit 1 #Exit if the copy fails
+fi
+
+# Find and copy the cover image file (if it exists)
+coverimg_file=$(find "$pdf_directory/$issue_cover_image_file" -maxdepth 1 -print -quit)
+if [[ -z "$coverimg_file" ]]; then  # -z checks for empty string
+  echo "No cover image file found in '$pdf_directory'."
+fi
+echo "Found cover image file: $coverimg_file"
+cp "$coverimg_file" "$csv_output_directory"
+if [ $? -eq 0 ]; then
+    echo "Copied cover image file: $coverimg_file -> $csv_output_directory"
+else
+    echo "Error copying cover image file: $coverimg_file"
     exit 1 #Exit if the copy fails
 fi
 
