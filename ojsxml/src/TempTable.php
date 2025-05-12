@@ -85,6 +85,13 @@ class TempTable
         (issueTitle,sectionTitle,sectionAbbrev,authors,affiliations,orcid,DOI,articleTitle,subTitle,year,datePublished,volume,issue,startPage,endPage,articleAbstract,galleyLabel,authorEmail,fileName,supplementary_files,dependent_files,keywords,citations,cover_image_filename,cover_image_alt_text,issue_cover_image_filename,issue_cover_image_alt_text,language,licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2) 
         VALUES (:issueTitle,:sectionTitle,:sectionAbbrev,:authors,:affiliations,:orcid,:DOI,:articleTitle,:subTitle,:year,:datePublished,:volume,:issue,:startPage,:endPage, :articleAbstract,:galleyLabel,:authorEmail,:fileName,:supplementary_files,:dependent_files,:keywords,:citations,:cover_image_filename,:cover_image_alt_text,:issue_cover_image_filename,:issue_cover_image_alt_text,:language,:licenseUrl,:copyrightHolder,:copyrightYear,:locale_2,:issueTitle_2,:sectionTitle_2,:articleTitle_2, :articleAbstract_2)";
         $this->db->query($sql);
+
+        // initialization of array values avoids "Warning: Undefined array key: ...".
+        $data['issueTitle'] = $data['issueTitle'] ?? '';
+        $data['sectionTitle'] = $data['sectionTitle'] ?? '';
+        $data['sectionAbbrev'] = $data['sectionAbbrev'] ?? '';
+        $data['authors'] = $data['authors'] ?? '';
+        
         $this->db->bind(':issueTitle', empty_string_if_null($data['issueTitle'])); // may exist or not
         $this->db->bind(':sectionTitle', empty_string_if_null($data['sectionTitle'])); // may exist or not
         $this->db->bind(':sectionAbbrev', empty_string_if_null($data['sectionAbbrev'])); // may exist or not
@@ -98,6 +105,24 @@ class TempTable
             $this->db->bind(':affiliations', '');
         }
 
+        // initialization of array values avoids "Warning: Undefined array key: ...".
+        $data['orcid'] = $data['orcid'] ?? '';
+        $data['DOI'] = $data['DOI'] ?? '';
+        $data['articleTitle'] = $data['articleTitle'] ?? '';
+        $data['subTitle'] = $data['subTitle'] ?? '';
+        $data['year'] = $data['year'] ?? '';
+        $data['datePublished'] = $data['datePublished'] ?? '';
+        $data['volume'] = $data['volume'] ?? '';
+        $data['issue'] = $data['issue'] ?? '';
+        $data['startPage'] = $data['startPage'] ?? '';
+        $data['endPage'] = $data['endPage'] ?? '';
+        $data['articleAbstract'] = $data['articleAbstract'] ?? '';
+        $data['galleyLabel'] = $data['galleyLabel'] ?? '';
+        $data['authorEmail'] = $data['authorEmail'] ?? '';
+        $data['fileName'] = $data['fileName'] ?? '';
+        $data['supplementary_files'] = $data['supplementary_files'] ?? '';
+        $data['dependent_files'] = $data['dependent_files'] ?? '';
+
         $this->db->bind(':orcid', empty_string_if_null($data['orcid'])); // may have an ORCIDs or not
         $this->db->bind(':DOI', empty_string_if_null($data['DOI']));
         $this->db->bind(':articleTitle', empty_string_if_null($data['articleTitle']));
@@ -108,9 +133,7 @@ class TempTable
         $this->db->bind(':issue', $data['issue'] ?? $data['Issue'] ?? '');
         $this->db->bind(':startPage', empty_string_if_null($data['startPage']));
         $this->db->bind(':endPage', empty_string_if_null($data['endPage']));
-
-		$articleAbstract = isset($data['articleAbstract']) ? $data['articleAbstract'] : '';
-        $this->db->bind(':articleAbstract', $articleAbstract);
+        $this->db->bind(':articleAbstract', empty_string_if_null($data['articleAbstract']));
         $this->db->bind(':galleyLabel', empty_string_if_null($data['galleyLabel']));
         $this->db->bind(':authorEmail', empty_string_if_null($data['authorEmail']));
         $this->db->bind(':fileName', empty_string_if_null($data['fileName']));

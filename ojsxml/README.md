@@ -444,4 +444,8 @@ is34 = True
 11th of May, 2025
 
 - clearer documentation text;
-- the issue cover image is copied to the `docroot/csv/abstracts` sub-directory. This avoids confusion with the article cover images;
+- the issue cover image is copied to the `docroot/csv/abstracts` sub-directory. This avoids confusion with the article cover images.
+
+12th of May, 2025
+
+- no more PHP warning messages when running the script;

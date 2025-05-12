@@ -420,7 +420,7 @@ class IssuesXmlBuilder extends XMLBuilder {
 
         $this->getXmlWriter()->startElement("abstract");
         $this->addLocaleAttribute();
-        $this->getXmlWriter()->writeRaw(xmlFormat(trim($articleData["abstract"])??''));
+        $this->getXmlWriter()->writeRaw(xmlFormat(trim(empty_string_if_null($articleData["abstract"]) ?? '')));
         $this->getXmlWriter()->endElement();
 		
 		if($articleData["articleAbstract_2"] != ''){
