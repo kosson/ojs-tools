@@ -449,3 +449,7 @@ is34 = True
 12th of May, 2025
 
 - no more PHP warning messages when running the script;
+
+18th of May, 2025
+
+- the covers for each of the articles are created in the resultiing XML file.
