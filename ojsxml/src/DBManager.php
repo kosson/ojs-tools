@@ -95,11 +95,11 @@ class DBManager {
     public function getArticlesDataBySection($issueTitle, $volume, $issue, $sectionAbbrev) {
         $volumeQueryPart = empty($volume) ? "" : " AND trim(volume) = trim(:volume)";
         $issueQueryPart = empty($issue) ? "" : " AND trim(issue) = trim(:issue)";
-        //FIXME: add orcid
+        //INFO: add here the fields you want to be included in the XML
         $articlesBySectionQuery = "SELECT issueTitle, sectionTitle, sectionAbbrev, supplementary_files, 
             dependent_files, authors, affiliations, DOI, orcid, articleTitle, subTitle, year, (datePublished) as datePublished,	
             volume, issue, startPage, COALESCE(endPage,'') as endPage, articleAbstract as abstract, galleyLabel, 
-            authorEmail, fileName, keywords, language, citations, licenseUrl, copyrightHolder, copyrightYear, 
+            authorEmail, fileName, keywords, language, citations, cover_image_filename, cover_image_alt_text, issue_cover_image_filename, issue_cover_image_alt_text, licenseUrl, copyrightHolder, copyrightYear, 
 			locale_2,sectionTitle_2, issueTitle_2, articleTitle_2, articleAbstract_2
             FROM " . $this->_temp_table_name .
             " WHERE trim(issueTitle) = trim(:issueTitle)"

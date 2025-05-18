@@ -55,7 +55,7 @@ class IssuesXmlBuilder extends XMLBuilder {
         $issuesData = $this->getDBManager()->getIssuesData($this->_iteration); // get issues data from database
         $this->_issueIdPrefix = 10;
         foreach ($issuesData as $issueData) {
-            $this->writeIssue($issueData);  // write issue data
+            $this->writeIssue($issueData);  // write issue data INIT!!!
 
             $issueMessage = empty($issueData['issue']) ? "" : ", Iss. {$issueData['issue']}";
             Logger::print("Vol. {$issueData['volume']}{$issueMessage} - {$issueData["issueTitle"]} successfully converted");
@@ -79,11 +79,12 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->writeAttribute("published", "1"); // <issue xmlns="http://pkp.sfu.ca" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" published="1">
 
         $this->writeIssueMetadata($issueData);  // <issue_identification>, <volume>, <number>, <year>, <title>, <date_published>
+        $this->writeIssueCover($issueData); // create the <covers> elements for the issue
         $this->writeSections($issueData["issueTitle"], $issueData["volume"], $issueData["issue"]);
-        $this->writeArticleCover($issueData); // create the <covers> elements for every article of the issue
-        $this->writeArticles($issueData);   // create of <articles> elements
 
-        $this->getXmlWriter()->endElement();    // close issue element
+        $this->writeArticles($issueData); // create of <articles> elements
+
+        $this->getXmlWriter()->endElement(); // close issue element
     }
 
     /**
@@ -187,6 +188,7 @@ class IssuesXmlBuilder extends XMLBuilder {
         if (trim($issueData["issue_cover_image_filename"] == "")) return;
 
         $path = $this->_issueCoverDir . "/" .$issueData["issue_cover_image_filename"]; // the cover image of the issue will be found next to the CSV file in the csv subdirectory. Similar to: `ahbb-vol48-no1-2022-cover.jpg`. The info will be repeated for all the record in the CSV
+        $type = pathinfo($path, PATHINFO_EXTENSION);
         $data = file_get_contents($path);
         $coverImageBase64 = base64_encode($data);
 
@@ -216,10 +218,15 @@ class IssuesXmlBuilder extends XMLBuilder {
      *
      * @param array $issueData
      */
-    function writeArticleCover($issueData) {
-        if (trim($issueData["cover_image_filename"] == "")) return;
+    function writeArticleCover($articleData) {
+        $issueData["cover_image_filename"] = $articleData["cover_image_filename"] ?? '';
+        if (trim(empty_string_if_null($articleData["cover_image_filename"]) == "")) return;
 
-        $path = $this->_issueCoversDir . $issueData["cover_image_filename"]; // the path of every image assigned as cover for an article
+        $path = $this->_issueCoversDir . $articleData["cover_image_filename"]; // the path of every image assigned as cover for an article
+        if (!file_exists($path)) {
+            Logger::print("File not found: " . $path);
+            return;
+        }
         $type = pathinfo($path, PATHINFO_EXTENSION);
         $data = file_get_contents($path);
         $coverImageBase64 = base64_encode($data);
@@ -229,11 +236,11 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->addLocaleAttribute();
 
         $this->getXmlWriter()->startElement("cover_image");
-        $this->getXmlWriter()->writeRaw($issueData["cover_image_filename"]);
+        $this->getXmlWriter()->writeRaw($articleData["cover_image_filename"]);
         $this->getXmlWriter()->endElement();
 
         $this->getXmlWriter()->startElement("cover_image_alt_text");
-        $this->getXmlWriter()->writeRaw(xmlFormat($issueData["cover_image_alt_text"]));
+        $this->getXmlWriter()->writeRaw(xmlFormat($articleData["cover_image_alt_text"]));
         $this->getXmlWriter()->endElement();
 
         $this->getXmlWriter()->startElement("embed");
@@ -272,7 +279,7 @@ class IssuesXmlBuilder extends XMLBuilder {
                 $articleData["publicationSeq"] = $publicationSeq;
                 $articleData["pages"] = $articleData["startPage"] . "-" . $articleData["endPage"];
 
-                $this->writeArticle($articleData);
+                $this->writeArticle($articleData); // calls writePublication in turn
 
                 $currentId += 1;
                 $publicationSeq += 1;
@@ -354,12 +361,15 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->writeAttribute("seq", $articleData["publicationSeq"]);
 
         $this->_writeIdElement($articleData["currentId"]);
-
+        
         $this->writePublicationMetadata($articleData);
         $this->writeAuthors($articleData);
         $this->writeArticleGalley($articleData);
 		
-		$this->writeCitations($articleData["citations"]);		
+		$this->writeCitations($articleData["citations"]);
+        
+        // FIXME: write article cover
+        $this->writeArticleCover($articleData); // create the <covers> elements for the article        
 
         $this->getXmlWriter()->startElement("pages");
         $this->getXmlWriter()->writeRaw(trim($articleData["pages"], "-"));
