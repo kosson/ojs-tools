@@ -127,10 +127,6 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->startElement("date_published");
         $this->getXmlWriter()->writeRaw(date("Y-m-d", strtotime($issueData["datePublished"])));
         $this->getXmlWriter()->endElement();
-
-        if ($issueData["issue_cover_image_filename"] != "") {
-            $this->writeIssueCover($issueData);  // create the <covers> elements for the issue
-        }
     }
 
     /**

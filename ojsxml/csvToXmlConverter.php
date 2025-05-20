@@ -114,11 +114,12 @@ class csvToXmlConverter {
     private function generateIssuesXml($sourceDir, $destinationDir) {
         // First import the CSV data into the database
         $dbManager = new DBManager();
-        $dbManager->importIssueCsvData($sourceDir . "/*");
+        $dbManager->importIssueCsvData($sourceDir . "/*.csv");
 
         $issueCoversDir = $sourceDir . "/issue_cover_images/"; // set cover image directory for the articles of the issue
         $issueCoverDir = $sourceDir; // set cover image directory for the issue cover image file
         $issueCount = $dbManager->getIssueCount();
+        var_dump("Numărul de reviste aparente este: " . $issueCount);
 
         $articleGalleysDir = $sourceDir . "/article_galleys/"; // set article galley directory
 
