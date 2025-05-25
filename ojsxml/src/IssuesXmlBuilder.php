@@ -325,7 +325,7 @@ class IssuesXmlBuilder extends XMLBuilder {
 
 		$this->getXmlWriter()->startElement("name");
         $this->addLocaleAttribute();
-        $this->getXmlWriter()->writeRaw($this->_user . ", " . $articleData["fileName"]);
+        $this->getXmlWriter()->writeRaw($articleData["fileName"]); // fixed user appearance in the filename: `<name locale="en">master, AHB_48-6.pdf</name>`
         $this->getXmlWriter()->endElement();
 
         $this->getXmlWriter()->startElement("file");
@@ -349,7 +349,7 @@ class IssuesXmlBuilder extends XMLBuilder {
     function writePublication($articleData) {
         $this->getXmlWriter()->startElement("publication");
         $this->getXmlWriter()->writeAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
-        $this->addLocaleAttribute();
+        // $this->addLocaleAttribute(); // generates error in production (left for compatibility with OJS 3.2; just activate it if you need to use it)
         $this->getXmlWriter()->writeAttribute("version", "1");
         $this->getXmlWriter()->writeAttribute("status", "3");
         $this->getXmlWriter()->writeAttribute("date_published", date("Y-m-d", strtotime(trim($articleData["datePublished"]))));
@@ -363,8 +363,7 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->writeArticleGalley($articleData);
 		
 		$this->writeCitations($articleData["citations"]);
-        
-        // FIXME: write article cover
+
         $this->writeArticleCover($articleData); // create the <covers> elements for the article        
 
         $this->getXmlWriter()->startElement("pages");
@@ -379,7 +378,7 @@ class IssuesXmlBuilder extends XMLBuilder {
 		if ($citationString != "") {
             $citations = parseNewLine($citationString);
             $this->getXmlWriter()->startElement("citations");
-            $this->addLocaleAttribute();
+            // $this->addLocaleAttribute(); ; // generates error in production (left for compatibility with OJS 3.2; just activate it if you need to use it)
             foreach ($citations as $citation) {
                 $this->getXmlWriter()->startElement("citation");
                 $this->getXmlWriter()->writeRaw(xmlFormat(trim($citation)));

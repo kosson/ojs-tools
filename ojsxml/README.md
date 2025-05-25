@@ -453,3 +453,9 @@ is34 = True
 18th of May, 2025
 
 - the covers for each of the articles are created in the resultiing XML file.
+
+24th of May, 2025
+
+- removing locale from `<publication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" locale="en"`;
+- fixed user appearance in the filename;
+- removinf locale from `<citations locale="en">`;
