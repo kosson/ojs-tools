@@ -459,3 +459,4 @@ is34 = True
 - removing locale from `<publication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" locale="en"`;
 - fixed user appearance in the filename;
 - removinf locale from `<citations locale="en">`;
+- fixing native.xsd constraints;

@@ -80,7 +80,11 @@ class IssuesXmlBuilder extends XMLBuilder {
 
         $this->writeIssueMetadata($issueData);  // <issue_identification>, <volume>, <number>, <year>, <title>, <date_published>
         $this->writeIssueCover($issueData); // create the <covers> elements for the issue
-        $this->writeSections($issueData["issueTitle"], $issueData["volume"], $issueData["issue"]);
+        // $this->writeSections($issueData["issueTitle"], $issueData["volume"], $issueData["issue"]); // kept if you want to write the `<sections>` element for the issue
+        $sectionsData = $this->getDBManager()->getSectionsData($issueData["issueTitle"], $issueData["volume"], $issueData["issue"]);
+        foreach ($sectionsData as $sectionData) {
+            $this->_sectionAbbreviations[] = $sectionData["sectionAbbrev"]; // hidrates `$issueData`
+        }
 
         $this->writeArticles($issueData); // create of <articles> elements
 
@@ -364,14 +368,38 @@ class IssuesXmlBuilder extends XMLBuilder {
 		
 		$this->writeCitations($articleData["citations"]);
 
-        $this->writeArticleCover($articleData); // create the <covers> elements for the article        
+        $this->getXmlWriter()->startElement("issue_identification");
+        if (isset($articleData["volume"])) {
+            $this->getXmlWriter()->startElement("volume");
+            $this->getXmlWriter()->writeRaw($articleData["volume"]);
+            $this->getXmlWriter()->endElement();
+        }
+        if (isset($articleData["issue"])) {
+            $this->getXmlWriter()->startElement("number");
+            $this->getXmlWriter()->writeRaw($articleData["issue"]);
+            $this->getXmlWriter()->endElement();
+        }
+        if (isset($articleData["year"])) {
+            $this->getXmlWriter()->startElement("year");
+            $this->getXmlWriter()->writeRaw($articleData["year"]);
+            $this->getXmlWriter()->endElement();
+        }
+        if (isset($articleData["issueTitle"])) {
+            $this->getXmlWriter()->startElement("title");
+            $this->addLocaleAttribute();
+            $this->getXmlWriter()->writeRaw(xmlFormat($articleData["issueTitle"]));
+            $this->getXmlWriter()->endElement();
+        }
+        $this->getXmlWriter()->endElement();
 
         $this->getXmlWriter()->startElement("pages");
         $this->getXmlWriter()->writeRaw(trim($articleData["pages"], "-"));
         $this->getXmlWriter()->endElement();
+
+        $this->writeArticleCover($articleData); // create the <covers> elements for the article   
+        
         $this->getXmlWriter()->endElement();
-    }
-	
+    }	
 	
 	function writeCitations($citationString){
 		
