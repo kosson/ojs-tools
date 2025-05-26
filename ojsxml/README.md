@@ -53,20 +53,27 @@ Example:
 php csvToXmlConverter issues username ./input_directory ./output_directory
 ```
 
-### Issue CSVs
+## Preparing the issue CSV
 
-#### The field names for issue
+### The field names for an issue
 
-The CSV should contain the following headings:
+The CSV file should include the following headings:
 
 `issueTitle,sectionTitle,sectionAbbrev,authors,affiliation,orcid,DOI,articleTitle,year,datePublished,volume,issue,startPage,endPage,articleAbstract,galleyLabel,authorEmail,fileName,keywords,citations,cover_image_filename,cover_image_alt_text,issue_cover_image_filename,issue_cover_image_filename_alt_text,licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`
+
+### Explanation of the fields
 
 You can have multiple authors in the "authors" field by separating them with a semi-colon. Also, use a comma to separating first and last names.
 
 Example: `Smith, John;Johnson, Jane ...`.
 
 The same rules for authors also apply to affiliation. Separate different affiliations with a semi-colon. If there is only 1 affiliation and multiple authors that 1 affiliation will be applied to all authors.
-Citations can be separated with a new line. The following fields are optional and can be left empty:
+
+Citations can be separated with a new line.
+
+The date format for the "datePublished" must be in the format `YYYY-MM-DD`. Otherwise, the date will be set automatically to 1969-12-31, which is the default date in OJS. If you do not know the date of publishing set it according to the publication apparitions during the year. For example, if the publication has only one issue in a year, and you do not know exactly when it was published, set the date to the first day of the year, e.g. `2022-01-01`. If you have multiple issues in a year, set the date to the first day of the month for the number of the issue in the year.
+
+The following fields are optional and can be left empty:
 
 `DOI, volume, issue, subtitle, keywords, citations, affiliation, cover image (both cover_image_filename and cover_image_alt_text must be included or omitted),licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`
 
@@ -75,31 +82,48 @@ The field `locale_2` should use the same format (i.e. `fr_CA`) that OJS uses for
 
 In March, 2025 fields `issue_cover_image_filename`, `issue_cover_image_filename_alt_text` and `orcid` were added. The first two are repeated accross all the CSV records (rows). The `orcid` must be an URL. In case of many authors, ORCIDs should be separated with `;` in the order of author completition.
 
-#### Prepare article related metadata and images for the creation of the XML
+## Prepare article related metadata and images for the creation of the XML
 
-The following steps are needed to prepare the article related metadata and images for the creation of the XML file. For automated processing, see below the `process-issue.sh` bash script. Before using this script, rename the `dot.env` file to `.env` from the `scripts` sub-directory, open it and modify the `BASE_PATH` value according to your environment. This path is the full path to the sub-directory where you started your work gathering the metadata and the files.
+The following steps are needed to prepare the article related metadata and images for the creation of the XML file. For automated processing, see below the `process-issue.sh` bash script. Before using this script, rename the `dot.env` file to `.env` from the `scripts` sub-directory, open it and modify the `BASE_PATH` value according to your environment. This path is the full path to the sub-directory where you started your work gathering the metadata (the CSV files) and the image files for the covers.
 
-All of these steps assume you have the CSV file, the cover image file (jpg format), the article PDFs, and the cover images (jpg format) in a single sub-directory in a place of your preference.
+### Pure manual processing of the issue data into XML
 
-1. Set up the variables in the `config.ini` file. See Annex 1 for an example. This should be done only once.
+You may choose to create the article covers by hand and copy all the resources in their indicated places. All of the following steps assume that you have the CSV file, the cover image file (jpg format) for the issue, the article PDFs, and the cover images (jpg format) for each article in a single sub-directory in a place of your preference.
+
+1. Set up the variables in the `config.ini` file. See ***Annex 1*** for an example. This should be done only once or if you change projects.
 2. Place the CSV file in the sub-directory `docroot/csv/abstracts` of the application. The `abstracts` input sub-directory must contain an `article_galleys` and `issue_cover_images` sub-directory (both of which exist within `docroot/csv/abstracts` by default), and the issue cover image if you have one. Remember to put here the issue cover image next to the CSV file.
-3. Place all PDF galleys (files) in the `article_galleys` sub-directory.
+3. Place all PDFs (galley files) in the `article_galleys` sub-directory.
 4. If you have cover images for the individual articles place them in the `issue_cover_images` directory.
-5. Run `php csvToXmlConverter.php issues ojs_username ./docroot/csv/abstracts ./docroot/output`.
-6. The XML file(s) will be output in the specified output directory (`docroot/output` directory in this case).
+5. If you have the cover image for the issue, place it in the `docroot/csv/abstracts` sub-directory next to the CSV file.
+6. Run `php csvToXmlConverter.php issues <ojs_username> ./docroot/csv/abstracts ./docroot/output`, where `ojs_username` should be the name of the user designated to make the uploads and management of the OJS platform.
+7. The XML file(s) will be output in the specified output directory (`docroot/output` directory in this case).
 
-You may choose to create the article covers by hand and copy all the resources in their indicated places.
-If you have created a sub-directory with all the article PDFs and the accompaning CSV file, and you have not created the article covers images (jpg format), you may use the `process-issue.sh` bash script that will do all the heavy lifting for you. Moreover, it will copy all the files to the right places, and will run the PHP command that will create the XML file in the `docroot/output` sub-directory. In the begining of the script run it will delete all the previous resources existing in the `docroot/csv/abstracts` subdirectory keeping only the necessary `.gitkeep` file. The following steps will be done by the script:
+### Automated processing of the issue data into XML
 
+The above steps can be tedious and error prone, especially if you have many articles in the issue. If you have all the resources in a single sub-directory, you may use the `process-issue.sh` script to automate the process of creating the XML file and copying the files to their respective places. The script could be placed in a diferent location from the ojsxml application. For convenience, it is placed in the subdirectory where all the publications resources are processed. The script should be accompanied by the `.env` file. If you don't have one, create it on the spot and addapt the `BASE_PATH` variable to your environment.
+
+If you have created a sub-directory with all the article PDFs, the accompaning CSV file, and the issue cover image, but you have not created the article covers images (jpg format), you may use the `process-issue.sh` bash script that will do all the heavy lifting for you. Moreover, it will copy all the files to the right places, and will run the PHP command that will create the XML file in the `docroot/output` sub-directory. The script is located in the `scripts` sub-directory of the application. If you do not have a cover issue image, you may use the `extract-cover.sh` script to extract the first page of the issue PDF as a cover image.
+
+**process-issue.sh** script will do the following:
+
+In the begining of the script run, it will delete all the previous resources existing in the `docroot/csv/abstracts` subdirectory keeping only the necessary `.gitkeep` file. The following steps will be executed by the script:
+
+- deletes all the files in the `docroot/csv/abstracts` sub-directory, except the `.gitkeep` file;
 - copies the PDFs in the subdirectory to the `article_galleys` sub-directory;
 - extracts the first page of each PDF file as a cover image (jpg format), and put it to the `issue_cover_images` sub-directory;
 - copies the cover image for the issue to the `docroot/csv/abstracts` sub-directory;
 - copies the CSV file containing the metadata in the `/docroot/csv/abstracts` sub-directory, and;
+- copies the issue cover image to the `docroot/csv/abstracts` sub-directory;
 - runs the php command that will create the XML file in the `docroot/output` sub-directory.
 
 At the moment of the command running, the process will ask you to give it the full path (not the relative) of the sub-directory where the CSV and the PDFs and the issue cover image are located. After you input the correct path, you will be requested to enter the filename of the issue cover file. Now, all the resources will be transfered in their respective places under the `docroot/csv` sub-directory.
 
-In the script there are some default values for the places where the CSV and the PDFs are located on the developer's machine. You may change them to your liking.
+In the script there are some default values for the places where the CSV and the PDFs are located on the developer's machine. You may change them to your liking. If you set the `.env` file, the script will use the `BASE_PATH` variable to determine where to look for the CSV and the PDFs. If you do not set the `BASE_PATH` variable, it will use the default values from the script. For example, my `.env` file looks like this:
+
+```bash
+BASE_PATH="/home/kosson/Downloads/PLATFORMA.EDITORIALA/DATE"
+USERNAME="master"
+```
 
 ### User CSVs
 
@@ -165,7 +189,10 @@ At least one `user_group` must be included inside the `user_groups` tag. The `us
 
 ## Hack your way through the OJS codebase to do the import
 
-First, upload the users of the issue you want to upload. This part is not mandatory. The best practice would be to have all the authors as users in a curated XML file already imported. Make sure your application uses workers. In large numbers, the uploads will be done partially. For example, from two hundred users, only a few dozens will be imported... mind this gap. For safety, use workers administrated by Supervisor (part of how OJS is set up and administered). See the official documentation. Check in the PHP configuration file `php/8.2/fpm/php.ini` for the following and increase the values for the following parameters:
+At this point you have the XML file(s) ready to be imported in OJS. The next step is to upload the XML file(s) using the *Native XML Plugin* of OJS. This plugin is available in OJS.
+
+First, upload the users of the issue you want to upload. This part is not mandatory. The best practice would be to have all the authors as users in a curated XML file already imported. 
+Make sure your OJS application uses workers. In large numbers, the uploads will be done partially. For example, from two hundred users, only a few dozens will be imported... mind this gap. For safety, use workers administrated by Supervisor (part of how OJS is set up and administered). See the official documentation. Check in the PHP configuration file `php/8.2/fpm/php.ini` for the following and increase the values for the following parameters:
 
 ```ini
 post_max_size = 200M
@@ -187,24 +214,24 @@ If you application is managed via Supervisor, you may restart the service with t
 sudo supervisorctl restart all
 ```
 
-### Avoid $setsequence wrong type
+### Hacks on the OJS code needed for the import to get through
 
-Unfortunatelly the application is not ready for the import of the XML file as is. It needs a bit of tinkering first.
+#### First, lets avoid $setsequence wrong type modifing the NativeXmlIssueFilter.php file
 
-#### NativeXmlIssueFilter.php modifications
+Unfortunatelly the application is not ready for the import of the XML file as is. It needs a bit of tinkering as following.
 
 The lines 340 and 377 of the original file `NativeXmlIssueFilter.php` must be modified prior any attempt of upload.
-Edit the file:
+Edit the file issuing the following command in the terminal of the application server:
 
 ```bash
 sudo nano -l /var/www/<name.ofthe.journal.io>/plugins/importexport/native/filter/NativeXmlIssueFilter.php
 ```
 
-where `<name.ofthe.journal.io>` is the name of the journal you are working on.
+where `<name.ofthe.journal.io>` is the name of the journal (the name of the subdirectory) you are working on.
 
-This is necessary to avoid the following error:
+This is necessary to avoid the following error at the moment of importing the XML file:
 
-```log
+```txt
 ## Errors occured:
 Generic Items
 - PKP\section\PKPSection::setSequence(): Argument #1 ($sequence) must be of type float, string given, called in /var/www/revue.of.lis/plugins/importexport/native/filter/NativeXmlIssueFilter.php on line 340
@@ -231,12 +258,12 @@ APP\section\Section::setAbstractWordCount(): Argument #1 ($wordCount) must be of
 
 Now you are ready to make the next step which involves modifications to the database, unfortunatelly. No biggie, though.
 
-### The integrity constraint violation
+### Hack the databese on the integrity constraint violation
 
 You are not out of the woods, yet.
 Making an attempt to upload the file to import it, it will throw an error generated by the database this time. The entire error message is something along the following lines:
 
-```log
+```txt
 SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a child row: a foreign key constraint fails 
 
 (`journalsunibuc`.`publications`, 
@@ -249,12 +276,12 @@ SQLSTATE[23000]: Integrity constraint violation: 1452 Cannot add or update a chi
 (SQL: update `publications` set `access_status` = 0, `date_published` = 2022-09-16, `last_modified` = 2025-01-25 19:24:02, `primary_contact_id` = 0, `section_id` = 2, `seq` = 0, `submission_id` = 380, `status` = 3, `url_path` = ?, `version` = 1, `doi_id` = ? where `publication_id` = 380)
 ```
 
-This one is tricky because you have to delete the constraint between the `publications` table, and the `authors` table. It is the reason issue XML file fails on being processed by the OJS specific part of the code.
+This one is tricky because you have to delete the constraint between the `publications` table, and the `authors` table. It is the reason issue XML file import fails on being processed by the OJS specific part of the code.
 
 ![](doc/img/FK-publications_primary_contact_id.png)
 
-Elimination the constraints is the first bit. Now you need to destroy the foreign key connection from the `authors` table as well. If you do not operate these modifications, you cannot make the import in OJS 3.4.0.8 version, at least.
-For making the modifications, [DBeaver Community](https://dbeaver.io/) was used being configured to access the database via ssh. Do not edit the database without a backup first. The modifications were applied first on a virtualized copy of the OJS multijournal application, and then on the production machine.
+Elimination the constraints is the first bit. Now you need to delete the foreign key connection from the `authors` table as well. If you do not operate these modifications, you cannot make the import in OJS 3.4.0.8 version, at least.
+For making the modifications, [DBeaver Community](https://dbeaver.io/) was used, being configured to access the database via ssh. Do not edit the database without a backup first. The modifications were applied first on a virtualized copy of the OJS multijournal application, and then on the production machine.
 
 Having DBeaver app started and connected to the database, proceed with the following opperations:
 
@@ -268,11 +295,13 @@ ALTER TABLE `authors` DROP FOREIGN KEY `authors_publications_id_foreign`;
 ALTER TABLE `publications` DROP FOREIGN KEY `publications_primary_contact_id`;
 ```
 
+## Now you are ready to import the XML file
+
 Now you are ready to import the XML file. The database is ready to accept the new data.
 
 ### Upload using the CLI tools of the OJS application
 
-First, initiate a Terminal session (any shell will do), and go to the root directory of the app. Now, as a measure of safety, check what plugins are available running the following command:
+First, initiate a Terminal session (any shell will do), and go to the root directory of the installed OJS application (the site sub-directory). Now, as a measure of safety, check what plugins are available running the following command:
 
 ```bash
 php tools/importExport.php list
@@ -280,7 +309,7 @@ php tools/importExport.php list
 
 The result should look like the following answer:
 
-```log
+```txt
 Available plugins:
 	NativeImportExportPlugin
 	UserImportExportPlugin
@@ -324,9 +353,7 @@ tools/importExport.php NativeImportExportPlugin import [xmlFileName] [journal_pa
 
 If these tests returned positive results, it means you have all the tools necessary to proced to running the magic PHP command.
 
-#### Import and issue as XML
-
-At this stage you are free to upload and import the XML issue file you have created localy. For the big file uploads (base64 encoding of "heavy" PDFs) do not use the GUI OJS is offering. It is a short path to failure. Resource to the script available in the `tools` subdirectory of the OJS application.
+Now, upload and put in the root directory of the OJS application the XML file you have created with the *ojsxml* application. For the big file uploads (base64 encoding of "heavy" PDFs) do not use the GUI the OJS application is offering. It is a short path to failure. Resource to the script available in the `tools` subdirectory of the OJS application.
 
 Let's get grinding. Position yourself in the root of the OJS application where you have also the XML file of the issue(s), and issue the following command in the terminal:
 
@@ -337,7 +364,7 @@ sudo php tools/importExport.php NativeImportExportPlugin import issues_0.xml ahb
 where `issues_0.xml` is the file you have obtained running the *ojsxml* application, and `ahbb` being the stub by which the journal is known on the platform. The stub acts as a unique identifier for the journal.
 If all goes well, the following positive response should be returned at the end of a big scroll of DB operations:
 
-```log
+```txt
 The import completed successfully. The following items were imported:
 
 Submission
@@ -351,7 +378,7 @@ Issue
 -"68" - "Vol. 48 No. 1 (2022): Acta Quietem Machinarium"
 ```
 
-Now, what you need to do is to go to GUI, and for each article of the newly imported issue, unpublish it, go to the `Contributors`, and `Set primary contact`. Choose the first author. This will create the necessary links in the database. See below with only the first article set how it looks like. Observe the id numbers being filled in.
+Now, what you need to do is to go to the GUI side of the OJS. Unpublish the imported issue, and for each article go to the `Contributors`, and `Set primary contact`. Choose the first author or the one you know is the primary contact. This will create the necessary links in the database. See below with only the first article set how it looks like. Observe the id numbers being filled in.
 
 ![](doc/img/Linkage-onearticle.png)
 
@@ -369,9 +396,10 @@ ALTER TABLE journalsunibuc.authors ADD CONSTRAINT authors_publications_id_foreig
 ALTER TABLE journalsunibuc.publications ADD CONSTRAINT publications_primary_contact_id FOREIGN KEY (primary_contact_id) REFERENCES journalsunibuc.authors(author_id) ON DELETE SET NULL ON UPDATE RESTRICT;
 ```
 
-You could redo the connections manualy, but after doing this for a few rounds, it gets tedious.
+You could redo the connections manualy using DBeaver, but after doing this for a few rounds, it gets tedious. So, the SQL script is the way to go.
 
 Provided all went well, you have successfuly imported a whole issue.
+Congratulations!
 
 ## Annex 1
 
@@ -452,7 +480,7 @@ is34 = True
 
 18th of May, 2025
 
-- the covers for each of the articles are created in the resultiing XML file.
+- the covers for each of the articles are created in the resulting XML file.
 
 24th of May, 2025
 
@@ -460,3 +488,7 @@ is34 = True
 - fixed user appearance in the filename;
 - removinf locale from `<citations locale="en">`;
 - fixing native.xsd constraints;
+
+25th of May, 2025
+
+- adding clear explanations in the README.md file.

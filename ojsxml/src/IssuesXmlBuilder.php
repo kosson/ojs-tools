@@ -97,7 +97,7 @@ class IssuesXmlBuilder extends XMLBuilder {
      * @param array $issueData Metadata about a single issue
      */
     function writeIssueMetadata($issueData) {
-        $this->getXmlWriter()->startElement("issue_identification");
+        $this->getXmlWriter()->startElement("issue_identification"); // `<issue_identification>` element
 
         if ($issueData['volume'] != "") {
             $this->getXmlWriter()->startElement("volume");
@@ -126,7 +126,7 @@ class IssuesXmlBuilder extends XMLBuilder {
             $this->getXmlWriter()->writeRaw(xmlFormat($issueData["issueTitle_2"]));
             $this->getXmlWriter()->endElement();
 		}
-        $this->getXmlWriter()->endElement();
+        $this->getXmlWriter()->endElement(); // `<issue_identification>` element
 
         $this->getXmlWriter()->startElement("date_published");
         $this->getXmlWriter()->writeRaw(date("Y-m-d", strtotime($issueData["datePublished"])));
