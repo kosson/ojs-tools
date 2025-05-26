@@ -86,17 +86,21 @@ else
 fi
 
 # Find and copy the cover image file (if it exists)
-coverimg_file=$(find "$pdf_directory/$issue_cover_image_file" -maxdepth 1 -print -quit)
+coverimg_file=""
+if [[ -n "$issue_cover_image_file" ]]; then
+  coverimg_file=$(find "$pdf_directory/$issue_cover_image_file" -maxdepth 1 -print -quit)
+fi
 if [[ -z "$coverimg_file" ]]; then  # -z checks for empty string
   echo "No cover image file found in '$pdf_directory'."
-fi
-echo "Found cover image file: $coverimg_file"
-cp "$coverimg_file" "$csv_output_directory"
-if [ $? -eq 0 ]; then
-    echo "Copied cover image file: $coverimg_file -> $csv_output_directory"
 else
-    echo "Error copying cover image file: $coverimg_file"
-    exit 1 #Exit if the copy fails
+  echo "Found cover image file: $coverimg_file"
+  cp "$coverimg_file" "$csv_output_directory"
+  if [ $? -eq 0 ]; then
+      echo "Copied cover image file: $coverimg_file -> $csv_output_directory"
+  else
+      echo "Error copying cover image file: $coverimg_file"
+      exit 1 #Exit if the copy fails
+  fi
 fi
 
 # Go back to the original directory (important!)
