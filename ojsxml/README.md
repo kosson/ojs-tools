@@ -491,4 +491,5 @@ is34 = True
 
 25th of May, 2025
 
-- adding clear explanations in the README.md file.
+- adding clear explanations in the README.md file;
+- if the cover image for issue does not exist, the `process-issue.sh` script will not try to copy it to the `docroot/csv/abstracts` sub-directory.
