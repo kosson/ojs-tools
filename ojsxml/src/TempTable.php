@@ -44,6 +44,8 @@ class TempTable
                       `sectionAbbrev` varchar(500)  DEFAULT NULL,
                       `authors` varchar(500)  DEFAULT NULL, 
                       `affiliations` varchar(500) DEFAULT NULL, 
+                      `roarname` varchar(1500) DEFAULT NULL,
+                      `roarid` varchar(1500) DEFAULT NULL,
                       `orcid` varchar (1500) DEFAULT NULL,
                       `DOI` varchar(500) DEFAULT NULL,                       
                       `articleTitle` varchar(500)  DEFAULT NULL, 

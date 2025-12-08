@@ -539,10 +539,27 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->writeRaw(trim($autorData["familyname"]));
         $this->getXmlWriter()->endElement();
 
+		// In case affiliation is mentioned, it needs a name element to insert it. Check against the README, the CSV fields.
+        // See `<element name="affiliation" minOccurs="0" maxOccurs="unbounded">`
         if (trim($autorData["affiliation"]) != "") {
-            $this->getXmlWriter()->startElement("affiliation");
-            //$this->addLocaleAttribute(); // validation with OJS 3.5 complains if this is added
+            $this->getXmlWriter()->startElement("affiliation");      
+            $this->getXmlWriter()->startElement("name");
             $this->getXmlWriter()->writeRaw(trim($autorData["affiliation"]));
+            $this->getXmlWriter()->endElement();
+            $this->getXmlWriter()->endElement();
+        }
+
+        // `rorAffiliation` is a sibling of `affiliation` in the XSD.
+        // satisfies the XSD requirement for `<affiliation>` element: `<element name="rorAffiliation" minOccurs="0" maxOccurs="unbounded">`.
+        if (!is_null($autorData["roarname"])) {
+            $this->getXmlWriter()->startElement("rorAffiliation");
+            $this->getXmlWriter()->startElement("ror");
+            $this->getXmlWriter()->writeRaw(trim($autorData["roarid"]));
+            $this->getXmlWriter()->endElement();
+            $this->getXmlWriter()->startElement("name");
+            $this->getXmlWriter()->writeRaw(trim($autorData["roarname"]));
+            $this->addLocaleAttribute();
+            $this->getXmlWriter()->endElement();
             $this->getXmlWriter()->endElement();
         }
 

@@ -1,9 +1,10 @@
 # CSV to OJS XML Import for OJS 3.4.0
 
-This collection of scripts and workflow was adapted from https://github.com/rkbuoe/ojsxml repo, which, in turn is a fork of the original repo from https://github.com/ualbertalib/ojsxml.
+This collection of scripts and workflows was adapted from https://github.com/rkbuoe/ojsxml repo, which, in turn is a fork of the original repo from https://github.com/ualbertalib/ojsxml.
 
-This application will convert a CSV file into the OJS XML native import file. Following this guide you will be able to use *Native XML Plugin* to upload whole issues, if desired, or use the CLI import scripts.
-The XSD is included with this project in the `docroot/output` directory.
+This application will convert a CSV file into the OJS XML native import file. Following this guide you will be able to use *Native XML Plugin* to upload whole issues, if desired, or use the CLI import scripts. This application is developed and run on a Ubuntu/Mint operating system. It is not tried out on Windows OS.
+
+The XSD of the OJS version is included with this project in the `docroot/output` directory.
 Sample CSV files for both users and issues are included in the `examples` directory.
 
 Note: This is NOT a comprehensive CSV to OJS XML conversion, and many fields are left out.
@@ -59,7 +60,7 @@ php csvToXmlConverter issues username ./input_directory ./output_directory
 
 The CSV file should include the following headings:
 
-`issueTitle,sectionTitle,sectionAbbrev,authors,affiliation,orcid,DOI,articleTitle,year,datePublished,volume,issue,startPage,endPage,articleAbstract,galleyLabel,authorEmail,fileName,keywords,citations,cover_image_filename,cover_image_alt_text,issue_cover_image_filename,issue_cover_image_filename_alt_text,licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`
+`issueTitle,sectionTitle,sectionAbbrev,authors,affiliation,roarname,roarid,orcid,DOI,articleTitle,year,datePublished,volume,issue,startPage,endPage,articleAbstract,galleyLabel,authorEmail,fileName,keywords,citations,cover_image_filename,cover_image_alt_text,issue_cover_image_filename,issue_cover_image_filename_alt_text,licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`
 
 ### Explanation of the fields
 
@@ -82,6 +83,8 @@ The field `locale_2` should use the same format (i.e. `fr_CA`) that OJS uses for
 
 In March, 2025 fields `issue_cover_image_filename`, `issue_cover_image_filename_alt_text` and `orcid` were added. The first two are repeated accross all the CSV records (rows). The `orcid` must be an URL. In case of many authors, ORCIDs should be separated with `;` in the order of author completition.
 
+In December 2025 `roarname`, and `roarid` fields were added. This was necessary to satisfy 3.5 XSD.
+
 ## Prepare article related metadata and images for the creation of the XML
 
 The following steps are needed to prepare the article related metadata and images for the creation of the XML file. For automated processing, see below the `process-issue.sh` bash script. Before using this script, rename the `dot.env` file to `.env` from the `scripts` sub-directory, open it and modify the `BASE_PATH` value according to your environment. This path is the full path to the sub-directory where you started your work gathering the metadata (the CSV files) and the image files for the covers.
@@ -95,7 +98,7 @@ You may choose to create the article covers by hand and copy all the resources i
 3. Place all PDFs (galley files) in the `article_galleys` sub-directory.
 4. If you have cover images for the individual articles place them in the `issue_cover_images` directory.
 5. If you have the cover image for the issue, place it in the `docroot/csv/abstracts` sub-directory next to the CSV file.
-6. Run `php csvToXmlConverter.php issues <ojs_username> ./docroot/csv/abstracts ./docroot/output`, where `ojs_username` should be the name of the user designated to make the uploads and management of the OJS platform.
+6. Run `php csvToXmlConverter.php issues <ojs_username> ./docroot/csv/abstracts ./docroot/output` from the application subdirectory, where `ojs_username` should be the name of the user designated to make the uploads and management of the OJS platform. See that you already have PHP installed.
 7. The XML file(s) will be output in the specified output directory (`docroot/output` directory in this case).
 
 ### Automated processing of the issue data into XML
@@ -454,42 +457,46 @@ is34 = True
 
 ## Modifications
 
-19 Feb, 2025
+### 19 Feb, 2025
 
 - ojsxml code was refactored to use Composer. Now you may launch the command from anywhere you like (as part of scripts)
 - `process-issue.sh` Bash script will do all the heavy lifting for you, and skip all the boring steps. See in documentation above
 
-11 Mar, 2025
+### 11 Mar, 2025
 
 - ojsxml README has been completed with the necessary steps to be taken in order to import the XML file in OJS;
 - fixed generating the cover of the issue. It was not available and the function `writeIssueCover` is missleading, so renamed to `writeArticleCover`. A new `writeIssueCover` function created (see IssuesXmlBuilder.php FIXME).
 
-27 Mar, 2025
+### 27 Mar, 2025
 
 - added the `orcid` field to the CSV file for the issues. The field is optional, and in case of many authors, ORCIDs should be separated with `;` in the order of author completition;
 - Place the cover image for the issue in the `issue_cover_images` directory. The cover image for the issue is repeated across the CSV records. The `issue_cover_image_filename` and `issue_cover_image_filename_alt_text` fields are optional. The script creates a correct `covers` element in the `<issue xmlns="http://pkp.sfu.ca" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" published="1">` element of the output file.
 
-11th of May, 2025
+### 11th of May, 2025
 
 - clearer documentation text;
 - the issue cover image is copied to the `docroot/csv/abstracts` sub-directory. This avoids confusion with the article cover images.
 
-12th of May, 2025
+### 12th of May, 2025
 
 - no more PHP warning messages when running the script;
 
-18th of May, 2025
+### 18th of May, 2025
 
 - the covers for each of the articles are created in the resulting XML file.
 
-24th of May, 2025
+### 24th of May, 2025
 
 - removing locale from `<publication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" locale="en"`;
 - fixed user appearance in the filename;
 - removinf locale from `<citations locale="en">`;
 - fixing native.xsd constraints;
 
-25th of May, 2025
+### 25th of May, 2025
 
 - adding clear explanations in the README.md file;
 - if the cover image for issue does not exist, the `process-issue.sh` script will not try to copy it to the `docroot/csv/abstracts` sub-directory.
+
+### 8th of December, 2025
+
+- `roarname`, and `roarid` fields were added. This was necessary to satisfy 3.5 XSD.

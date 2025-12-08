@@ -15,7 +15,7 @@
 	<!--
 	  - Base the user import/export on the User database model.
 	  -->
-	<include schemaLocation="../../../plugins/importexport/native/pkp-native.xsd" />
+	<include schemaLocation="pkp-native.xsd" />
 
 	<!--
 	  - User-related Elements
