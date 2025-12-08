@@ -541,7 +541,7 @@ class IssuesXmlBuilder extends XMLBuilder {
 
         if (trim($autorData["affiliation"]) != "") {
             $this->getXmlWriter()->startElement("affiliation");
-            $this->addLocaleAttribute();
+            //$this->addLocaleAttribute(); // validation with OJS 3.5 complains if this is added
             $this->getXmlWriter()->writeRaw(trim($autorData["affiliation"]));
             $this->getXmlWriter()->endElement();
         }
