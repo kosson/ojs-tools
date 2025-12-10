@@ -185,11 +185,25 @@ class IssuesXmlBuilder extends XMLBuilder {
     }
 
     function writeIssueCover($issueData) {
-        if (trim($issueData["issue_cover_image_filename"] == "")) return;
+        // defensive: make sure the filename field exists and is not empty
+        if (!isset($issueData["issue_cover_image_filename"]) || trim($issueData["issue_cover_image_filename"]) == "") {
+            return;
+        }
 
-        $path = $this->_issueCoverDir . "/" .$issueData["issue_cover_image_filename"]; // the cover image of the issue will be found next to the CSV file in the csv subdirectory. Similar to: `ahbb-vol48-no1-2022-cover.jpg`. The info will be repeated for all the record in the CSV
+        $path = $this->_issueCoverDir . "/" . $issueData["issue_cover_image_filename"]; // expected: `ahbb-vol48-no1-2022-cover.jpg`
+
+        if (!file_exists($path) || !is_file($path)) {
+            // missing cover: log and skip embedding to avoid PHP warnings
+            Logger::print("Issue cover not found: " . $path);
+            return;
+        }
+
         $type = pathinfo($path, PATHINFO_EXTENSION);
-        $data = file_get_contents($path);
+        $data = @file_get_contents($path);
+        if ($data === false) {
+            Logger::print("Failed to read issue cover: " . $path);
+            return;
+        }
         $coverImageBase64 = base64_encode($data);
 
         $this->getXmlWriter()->startElement("covers");
@@ -219,16 +233,20 @@ class IssuesXmlBuilder extends XMLBuilder {
      * @param array $issueData
      */
     function writeArticleCover($articleData) {
-        $issueData["cover_image_filename"] = $articleData["cover_image_filename"] ?? '';
-        if (trim(empty_string_if_null($articleData["cover_image_filename"]) == "")) return;
+        $articleCover = $articleData["cover_image_filename"] ?? '';
+        if (trim(empty_string_if_null($articleCover)) == "") return;
 
-        $path = $this->_issueCoversDir . $articleData["cover_image_filename"]; // the path of every image assigned as cover for an article
-        if (!file_exists($path)) {
-            Logger::print("File not found: " . $path);
+        $path = $this->_issueCoversDir . $articleCover; // the path of every image assigned as cover for an article
+        if (!file_exists($path) || !is_file($path)) {
+            Logger::print("Article cover not found: " . $path);
             return;
         }
         $type = pathinfo($path, PATHINFO_EXTENSION);
-        $data = file_get_contents($path);
+        $data = @file_get_contents($path);
+        if ($data === false) {
+            Logger::print("Failed to read article cover: " . $path);
+            return;
+        }
         $coverImageBase64 = base64_encode($data);
 
         $this->getXmlWriter()->startElement("covers");
@@ -236,7 +254,7 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->addLocaleAttribute();
 
         $this->getXmlWriter()->startElement("cover_image");
-        $this->getXmlWriter()->writeRaw($articleData["cover_image_filename"]);
+        $this->getXmlWriter()->writeRaw($articleCover);
         $this->getXmlWriter()->endElement();
 
         $this->getXmlWriter()->startElement("cover_image_alt_text");
@@ -309,12 +327,21 @@ class IssuesXmlBuilder extends XMLBuilder {
 
     function _writeSubmissionFile(array $articleData) {
 
-        if (trim($articleData["fileName"] == "")) return;
+        if (!isset($articleData["fileName"]) || trim($articleData["fileName"]) === "") return;
 
         $path = $this->_articleGalleysDir . $articleData["fileName"];
-		$filesize = filesize($path);
+        if (!file_exists($path) || !is_file($path)) {
+            Logger::print("Submission file not found: " . $path);
+            return;
+        }
+
+        $filesize = filesize($path);
         $type = pathinfo($path, PATHINFO_EXTENSION);
-        $data = file_get_contents($path);
+        $data = @file_get_contents($path);
+        if ($data === false) {
+            Logger::print("Failed to read submission file: " . $path);
+            return;
+        }
         $articleGalleyBase64 = base64_encode($data);
 
         $this->getXmlWriter()->startElement("submission_file");
@@ -478,7 +505,7 @@ class IssuesXmlBuilder extends XMLBuilder {
 			$this->getXmlWriter()->endElement();
 		}
 		
-        if (semiColonFix($articleData["keywords"] != "")) {
+        if (!empty($articleData["keywords"]) && trim($articleData["keywords"]) !== "") {
             $keywordArray = parseSemiColon($articleData["keywords"]);
             $this->getXmlWriter()->startElement("keywords");
             $this->addLocaleAttribute();
@@ -538,7 +565,7 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->addLocaleAttribute();
         $this->getXmlWriter()->writeRaw(trim($autorData["familyname"]));
         $this->getXmlWriter()->endElement();
-
+		
 		// In case affiliation is mentioned, it needs a name element to insert it. Check against the README, the CSV fields.
         // See `<element name="affiliation" minOccurs="0" maxOccurs="unbounded">`
         if (trim($autorData["affiliation"]) != "") {
@@ -550,16 +577,18 @@ class IssuesXmlBuilder extends XMLBuilder {
         }
 
         // `rorAffiliation` is a sibling of `affiliation` in the XSD.
-        // satisfies the XSD requirement for `<affiliation>` element: `<element name="rorAffiliation" minOccurs="0" maxOccurs="unbounded">`.
-        if (!is_null($autorData["roarname"])) {
+        // Emit only if roarname or roarid is present to avoid undefined index warnings.
+        if (!empty($autorData["roarname"]) || !empty($autorData["roarid"])) {
             $this->getXmlWriter()->startElement("rorAffiliation");
             $this->getXmlWriter()->startElement("ror");
-            $this->getXmlWriter()->writeRaw(trim($autorData["roarid"]));
+            $this->getXmlWriter()->writeRaw(trim($autorData["roarid"] ?? ""));
             $this->getXmlWriter()->endElement();
-            $this->getXmlWriter()->startElement("name");
-            $this->getXmlWriter()->writeRaw(trim($autorData["roarname"]));
-            $this->addLocaleAttribute();
-            $this->getXmlWriter()->endElement();
+            if (!empty($autorData["roarname"])) {
+                $this->getXmlWriter()->startElement("name");
+                $this->getXmlWriter()->writeRaw(trim($autorData["roarname"]));
+                $this->addLocaleAttribute();
+                $this->getXmlWriter()->endElement();
+            }
             $this->getXmlWriter()->endElement();
         }
 

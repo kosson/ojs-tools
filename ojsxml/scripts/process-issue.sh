@@ -17,7 +17,7 @@ if [ ! -d "$pdf_directory" ]; then
 fi
 
 # Set the output directories using the base path (from .env or default)
-base_path="${BASE_PATH:-"/home/kosson/Downloads/PLATFORMA.EDITORIALA/DATE"}" # Use .env value or default
+base_path="${BASE_PATH:-"/home/nicolaie/Documents/PLATFORMA.EDITORIALA/DATE"}" # Use .env value or default
 
 # Set the directory where you want to copy the processed JPG files
 #jpg_output_directory="/home/nicolaie/Downloads/PLATFORMA.EDITORIALA/DATE/ojsxml/docroot/csv/abstracts/issue_cover_images" # Replace with the desired output path for JPGs
@@ -102,7 +102,6 @@ else
       exit 1 #Exit if the copy fails
   fi
 fi
-
 # Go back to the original directory (important!)
 cd - > /dev/null  # Or cd $OLDPWD if you saved it earlier
 
