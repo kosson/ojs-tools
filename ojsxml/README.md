@@ -1,12 +1,13 @@
+![image](doc/img/OJS-XML-Issue-Creator-Index.png)
 # CSV to OJS XML Import for OJS 3.5
 
-This is an application written in PHP. It is transforming a CSV file into a 3.5 OJS valid XML ready to be imported. Although it is developed on Linux/GNU Ubuntu operating system, efforts are put into it to make it a full web application able to be run on Windows as well. This is NOT a comprehensive CSV to OJS XML conversion, and some fields are left out.
+This is an application written in PHP. It is transforming a CSV file into a 3.5 OJS valid XML ready to be imported using the Native Import plugin. Although it is developed on Linux/GNU Ubuntu operating system, efforts are put into it to make it a full web application able to be run on Windows as well. This is NOT a comprehensive CSV to OJS XML conversion, and some fields are left out. It is not covering the entire XSD OJS specific schema. The application is as is. Use it with care. Verify the resulted XML prior to making the import.
 
 ## Historic context
 
-This collection of scripts and workflows was adapted from https://github.com/rkbuoe/ojsxml repo, which, in turn is a fork of the original repo from https://github.com/ualbertalib/ojsxml.
+This collection of scripts and workflows was adapted from the https://github.com/rkbuoe/ojsxml repo, which, in turn is a fork of the original repo from https://github.com/ualbertalib/ojsxml. Kudos to the original creators and maintainers.
 
-This application will convert a CSV file into the OJS XML native import file. Following this guide you will be able to use *Native XML Plugin* to upload whole issues, if desired, or use the CLI import scripts. This application is developed and run on a Ubuntu/Mint operating system. It is not tried out on Windows OS.
+This application will convert a CSV file into the OJS XML native import file. Following this guide you will be able to use *Native XML Plugin* to upload whole issues, if desired, or use the CLI import scripts. This application is developed and run on a Ubuntu/Mint operating system. It is not tried out on Windows OS yet.
 
 The XSD of the OJS version is included with this project in the `schema` subdirectory.
 Sample CSV files for both users and issues are included in the `examples` subdirectory.
@@ -36,7 +37,7 @@ This is needed to extract the first page of the PDF files to use as cover images
 
 ## Known Issues
 
-* Each issue export XML file can contain __only one issue__. The adaptation of the scripts targets 3.5. Multiple issues/XML file can lead to database corruption.
+* Each issue export XML file can contain __only one issue__. The adaptation of the scripts targets 3.5 version of the OJS.
 * The journal's current issue must be manually set upon import completion. This conversion tool does not indicate which issue should be the current one.
 * In the case of the users, the `user_groups` section of the XML must be manually added and is journal specific. This can be found at the top of a User export XML from the current journal (see below for example).
 * CSV files should be UTF8 encoded or non-ASCII characters will not appear correctly.
@@ -73,6 +74,7 @@ You can have multiple authors in the "authors" field by separating them with a s
 Example: `Smith, John;Johnson, Jane ...`.
 
 The same rules for authors also apply to affiliation. Separate different affiliations with a semi-colon. If there is only 1 affiliation and multiple authors that 1 affiliation will be applied to all authors.
+Citations can be separated with a new line. The following fields are optional and can be left empty:
 
 Citations can be separated with a new line.
 
@@ -494,3 +496,11 @@ is34 = True
 - creation of the `run-server.sh` for Linux/GNU, and `run-server.bat` for Windows - portability is aimed;
 - ancilary: `styles.css` needed for GUI;
 - README updated.
+
+### 28th of December, 2025
+
+- refining the UX;
+- the resulting XML file is bearing an explicit name;
+- creation of a simple routing system, and a peage where the data accumulated is visualy accessible;
+- you may download all the data accumulated in the local DB as CSV file;
+- multiple optimisations of the application.
