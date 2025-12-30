@@ -348,8 +348,8 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->writeAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
         $this->getXmlWriter()->writeAttribute("id", $articleData["currentId"]);
 		$this->getXmlWriter()->writeAttribute("file_id", $articleData["currentId"]);
-        $this->getXmlWriter()->writeAttribute("stage", "proof");
-        $this->getXmlWriter()->writeAttribute("viewable", "false");
+        $this->getXmlWriter()->writeAttribute("stage", "public");
+        $this->getXmlWriter()->writeAttribute("viewable", "true");
         $this->getXmlWriter()->writeAttribute("genre", $this->_getGenreName());
         $this->getXmlWriter()->writeAttribute("uploader", $this->_user);
         $this->getXmlWriter()->writeAttribute("xsi:schemaLocation", "http://pkp.sfu.ca native.xsd");
