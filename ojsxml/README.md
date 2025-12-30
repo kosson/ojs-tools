@@ -507,3 +507,17 @@ is34 = True
 - creation of the `run-server.sh` for Linux/GNU, and `run-server.bat` for Windows - portability is aimed;
 - ancilary: `styles.css` needed for GUI;
 - README updated.
+
+### 28th of December, 2025
+
+- refining the UX;
+- the resulting XML file is bearing an explicit name;
+- creation of a simple routing system, and a peage where the data accumulated is visualy accessible;
+- you may download all the data accumulated in the local DB as CSV file;
+- multiple optimisations of the application.
+
+### 29th of December
+
+- UX improvements;
+- multiple production scenarios completed with passing colors;
+- fixes
