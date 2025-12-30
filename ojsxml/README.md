@@ -8,6 +8,12 @@ This is an application written in PHP. It is transforming a CSV file into a 3.5 
 If you are running Linux, run the script `run-server.sh` to start the PHP application. Make sure the script is executable. Adapt the application settings to your environment modifying the values of the `.env` file in the root of the application.
 If you are running Windows, run the the script `run-server.bat`. Go to your preferate browser and open a pege on the `localhost:8000`. The GUI will be available to you. You have to have a zip archive containing the CSV file (see bellow the fields), and at least the cover of the issue, if there is one.
 
+Before generating the XML file followed by the intent of using the import plugin, check all the data from the CSV again, and again. Things you have to be very careful with:
+
+- the abbreviation of the sections MUST be identical to those already set in the OJS instance you want to import. Be very, very thorough. Otherwise "ghost" records will be created in the database.
+
+After import check all the articles and designate the primary contact. This is not done automatically by OJS import plugin.
+
 ## Historic context
 
 This collection of scripts and workflows was adapted from https://github.com/rkbuoe/ojsxml repo, which, in turn is a fork of the original repo from https://github.com/ualbertalib/ojsxml.
