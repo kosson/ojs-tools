@@ -316,9 +316,8 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->startElement("article");
         $this->getXmlWriter()->writeAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
         $this->getXmlWriter()->writeAttribute("status", "3");
-        $this->getXmlWriter()->writeAttribute("stage" ,"production");
+        $this->getXmlWriter()->writeAttribute("stage" ,"proof");
         $this->getXmlWriter()->writeAttribute("current_publication_id", $articleData["currentId"]);
-
         $this->_writeIdElement($articleData["currentId"]);
         $this->_writeSubmissionFile($articleData);
         $this->writePublication($articleData);
