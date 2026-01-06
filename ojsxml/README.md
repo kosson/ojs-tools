@@ -72,35 +72,427 @@ php csvToXmlConverter issues username ./input_directory ./output_directory
 
 ## Preparing the issue CSV
 
-### The field names for an issue
+The rules by which the CSV file is created and its records as following.
 
-The CSV file should include the following headings:
+General considerations:
 
-`issueTitle,sectionTitle,sectionAbbrev,authors,affiliation,roarname,roarid,orcid,DOI,articleTitle,year,datePublished,volume,issue,startPage,endPage,articleAbstract,galleyLabel,authorEmail,fileName,keywords,citations,cover_image_filename,cover_image_alt_text,issue_cover_image_filename,issue_cover_image_filename_alt_text,licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`
+- each line in the file correspond to a record, that being a scientific article or literature review;
 
-### Explanation of the fields
+## Column names
 
-You can have multiple authors in the "authors" field by separating them with a semi-colon. Also, use a comma to separating first and last names.
+The following list are the names of the columns for each record in the CSV file. The following could constitute the starting header for a CSV file if copied and saved in a file with CSV extension:
 
-Example: `Smith, John;Johnson, Jane ...`.
+```csv
+issueTitle,sectionTitle,sectionAbbrev,authors,affiliation,roarname,roarid,orcid,DOI,articleTitle,year,datePublished,volume,issue,startPage,endPage,articleAbstract,galleyLabel,authorEmail,fileName,keywords,citations,cover_image_filename,cover_image_alt_text,issue_cover_image_filename,issue_cover_image_filename_alt_text,licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2
+```
 
-The same rules for authors also apply to affiliation. Separate different affiliations with a semi-colon. If there is only 1 affiliation and multiple authors that 1 affiliation will be applied to all authors.
-Citations can be separated with a new line. The following fields are optional and can be left empty:
+First operations:
 
-Citations can be separated with a new line.
+- ensure all the columns exist in the CSV and are redacted exactly as in the header example. Do all the modifications necesary, adding the missing fields or correcting the existing ones;
+- trim all the fileds values so that there are no spaces infront or following the value;
 
-The date format for the "datePublished" must be in the format `YYYY-MM-DD`. Otherwise, the date will be set automatically to the value `1970-01-01`, which is the default date in OJS. If you do not know the date of publishing set it according to the publication apparitions during the year. For example, if the publication has only one issue in a year, and you do not know exactly when it was published, set the date to the first day of the year, e.g. `2022-01-01`. If you have multiple issues in a year, set the date to the first day of the month for the number of the issue in the year.
+## Rules and Operations
 
-The following fields are optional and can be left empty:
+The following are the rules and needed Operations for every value in the record.
 
-`DOI, volume, issue, subtitle, keywords, citations, affiliation, roarname, roarid, cover image (both cover_image_filename and cover_image_alt_text must be included or omitted),licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`
+### For the value of `issueTitle`
 
-In May, 2024 some fields were added for basic multilingual support. The extra fields are: `locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`.
+The value of `issueTitle` is text and follows the constraints:
+
+- MUST EXIST, and
+- MUST BE repeated for all the records in the file.
+
+#### Operations for `issueTitle`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, replace with space;
+- trim for whitespace at the beginning and in the end of the text content;
+- make sure all there are no mistakes in the sibling records. Mistake means letters ommited, inversed or the value written with caps;
+
+### For the value of `sectionTitle`
+
+The value of `sectionTitle` is text and follows the constraints:
+
+- MUST EXIST.
+
+#### Operations for `sectionTitle`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, replace with space;
+- trim for whitespace at the beginning and in the end of the text content;
+
+#### Human checks  for `sectionTitle`
+
+- The value of `sectionTitle` MUST BE already set in the Open Journal System application for the corresponding journal. See Journal settings.
+
+### For the value of `sectionAbbrev`
+
+The value of `sectionAbbrev` is text and MUST BE already set in the Open Journal System application for the corresponding journal.
+
+#### Operations for `sectionAbbrev`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, replace with space;
+- trim for whitespace at the beginning and in the end of the text content;
+
+### For the value of `authors`
+
+At least one author must be mentioned.
+You can have multiple authors in the `authors` field separating them with a semicolon. Also, use a comma to separating first and last names. Example: `Smith, John;Johnson, Jane`
+
+#### Operations for `authors`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, replace with space;
+- trim for whitespace at the beginning and in the end of the text content;
+- ensure the first and the last name are sepparated by comma. Mind that there are cases where the names also have initials in the form of a caps letter followed by a dot;
+- detect any formating errors and correct it.
+
+### For the value of `affiliation`
+
+You can have multiple values in the `affiliation` field separated by a semicolon.
+The value of `sectionTitle` is text. This value is optional.
+
+#### Operations for `affiliation`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, replace with space;
+- trim for whitespace at the beginning and in the end of the text content;
+- detect any formating errors and correct it.
+
+#### Human checks  for `affiliation`
+
+If there is only 1 affiliation and multiple authors that 1 affiliation will be applied to all authors.
+
+### For the value of `roarname`
+
+The value of `roarname` is text. This value is optional.
+
+#### Operations for `roarname`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, replace with space;
+- trim for whitespace at the beginning and in the end of the text content.
+
+#### Human checks for `roarname`
+
+The value must picked from Registry of Research Organization Registry (ROR) available at https://ror.org/
+
+### For the value of `roarid`
+
+The value of `roarname` is text. This value MUST EXIST if `roarname` field has an optional value.
+
+#### Operations for `roarid`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, replace with space;
+- trim for whitespace at the beginning and in the end of the text content.
+
+#### Human checks for `roarid`
+
+The value must picked from Registry of Research Organization Registry (ROR) available at https://ror.org/
+
+### For the value of `orcid`
+
+The value of `orcid` is text representation of an URL. This value is optional.
+
+#### Operations for `orcid`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, replace with space;
+- trim for whitespace at the beginning and in the end of the text content.
+- if multiple URLs representing ORCIDs are in the field, it must be redacted as a list of URLs separated by semicolons.
+
+#### Human checks for `orcid`
+
+It should be checked against https://orcid.org/.
+If one or more URLs are added, the values will correspond to the authors in the order of their apparition in the semicolon separated list in the field of `authors`.
+
+### For the value of `DOI`
+
+The value of `DOI` is text. This value is optional.
+
+#### Operations for `DOI`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, replace with space;
+- trim for whitespace at the beginning and in the end of the text content.
+
+#### Human checks for `DOI`
+
+It should be checked against https://dx.doi.org/ to see if it is still dereferencing correctly.
+
+### For the value of `articleTitle`
+
+The value of `articleTitle` is text. It MUST exist.
+
+#### Operations for `articleTitle`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, replace with space;
+- trim for whitespace at the beginning and in the end of the text content.
+
+### For the value of `year`
+
+This is a number value representing the year of publication for the volume.
+
+#### Operations for `year`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the text content;
+- check if the text in the cell is actually a year.
+
+### For the value of `datePublished`
+
+The date format for the `datePublished` and it MUST BE in the format `YYYY-MM-DD`. This is optional.
+
+#### Operations for `datePublished`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the text content;
+- check if the text in the cell is actually a calendaristic date.
+
+#### Human checks for `datePublished`
+
+Otherwise, the date will be set automatically to the value 1970-01-01, which is the default date in OJS. If you do not know the date of publishing set it according to the publication apparitions during the year. For example, if the publication has only one issue in a year, and you do not know exactly when it was published, set the date to the first day of the year, e.g. 2022-01-01. If you have multiple issues in a year, set the date to the first day of the month for the number of the issue in the year.
+
+### For the value of `volume`
+
+This is a number value representing the number of the volume. It is an optional value.
+
+#### Operations for `volume`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content;
+- check if the value in the cell is actually a number.
+
+### For the value of `issue`
+
+This is a number value representing the issue number. It is an optional value.
+
+#### Operations for `issue`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content;
+- check if the value in the cell is actually a number.
+
+### For the value of `startPage`
+
+This is a number value representing the start page. It is an optional value.
+
+#### Operations for `startPage`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content;
+- check if the value in the cell is actually a number.
+
+### For the value of `endPage`
+
+This is a number value representing the start page. If the value of `startPage` is set, then this MUST BE set.
+
+#### Operations for `endPage`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content;
+- check if the value in the cell is actually a number.
+
+### For the value of `articleAbstract`
+
+This is a multiline text value. This value is optional.
+
+#### Operations for `articleAbstract`
+
+- check if it exists;
+- trim for whitespace at the beginning and in the end of the content;
+- the content origin is sometimes an OCR process. Provide all the corrections needed checking appropriate spelling;
+
+### For the value of `galleyLabel`
+
+This is a text value usually indicating the type of file the final editorial form is. The usual is `PDF`. It is not a mandatory value.
+
+#### Operations for `galleyLabel`
+
+- check if it exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content;
+
+### For the value of `authorEmail`
+
+This is a text value. If at least one author is mentioned, one email address SHOULD BE mentioned. The value is optional.
+
+#### Operations for `authorEmail`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content;
+- if multiple email addresses are mentioned, they must be separated by semicolon.
+
+#### Human checks for `authorEmail`
+
+If one email exist, this should be the value entered.
+If one or more email addresses are added, the values will correspond to the authors in the order of their apparition in the semicolon separated list in the field of `authors`.
+
+### For the value of `fileName`
+
+This is a text value. It is the name of the PDF file or the type you have mentioned in the `galleyLabel` field. Represents the content of the article (record). This value is optional, but if you mentioned the value of `galleyLabel`, it means there is a file as well.
+
+#### Operations for `fileName`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content;
+- check if there is a file in the directory where the CSV file is with the name mentioned as value.
+
+### For the value of `keywords`
+
+This field has a text value. This is an optional value.
+If there are more than one keywords, these should be in a list of values separated by semicolons.
+
+#### Operations for `keywords`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content.
+
+### For the value of `citations`
+
+This is a field with multiline text.
+Citations SHOULD BE separated with a single new line.
+
+#### Operations for `citations`
+
+- check if the value exists;
+- the content sometimes is a product of OCR. This means the citations are split across multiple lines. Do your best to correct the text. Take into consideration the fact these citations are numbered. For example, the begining looks like `1.` or `23.` for that matter. Devise euristics and correction algorithms for such cases;
+- ensure every citation is on its own line;
+- trim for whitespace at the beginning and in the end of the content.
+
+###  For the value of `cover_image_filename`
+
+This is a text value. It is the name of the JPG or PNG file that is the cover of the article. This will be a repeated value for all the records.
+
+#### Operations for `cover_image_filename`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content;
+- check if there is a file in the directory where the CSV file is with the name mentioned as value.
+
+### For the value of `cover_image_alt_text`
+
+This is a text value. It is used for the alt value associated with the image representation of the `cover_image_filename`.
+
+#### Operations for `cover_image_alt_text`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content.
+
+### For the value of `issue_cover_image_filename`
+
+This is a text value. It is the name of the JPG or PNG file that is the cover of the issue. This will be a repeated value for all the records. It is optional.
+
+#### Operations for `issue_cover_image_filename`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content;
+- check if there is a file in the directory where the CSV file is with the name mentioned as value.
+
+### For the value of `issue_cover_image_filename_alt_text`
+
+This is a text value. It is used for the alt value associated with the image representation of the `issue_cover_image_filename` field.
+
+#### Operations for `issue_cover_image_filename_alt_text`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content.
+
+### For the value of `licenseUrl`
+
+This value is a text value representing an URL that leads to a license. Usually that is Creative Commons license. This value is optional.
+
+#### Operations for `licenseUrl`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content;
+- check if it is an URL.
+
+### For the value of `copyrightHolder`
+
+This is a text value. This is the name of the body entitled to hold the license.
+
+#### Operations for `copyrightHolder`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content.
+
+### For the value of `locale_2`
+
+This is a text value of a I18N locale. It is mandatory if you add values to the `issueTitle_2`, `sectionTitle_2`, `articleTitle_2` and `articleAbstract_2` fields. A list of the locales accepted here: https://github.com/ladjs/i18n-locales. This is the language of the text in the fields mentioned.
+
+#### Operations for `locale_2`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content;
+- ensure the value is a correct I18N locale string.
+
+### For the value of `issueTitle_2`
+
+This is a text value representing the title of the issue in a second language.
+
+#### Operations for `issueTitle_2`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content.
+
+### For the value of `sectionTitle_2`
+
+This is a text value representing the section title in the second language.
+
+#### Operations for `sectionTitle_2`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content.
+
+### For the value of `articleTitle_2`
+
+This is a text value representing the article title in the second language.
+
+#### Operations for `articleTitle_2`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content.
+
+### For the value of `articleAbstract_2`
+
+This is a text value representing the article title in the second language.
+
+#### Operations for `articleAbstract_2`
+
+- check if the value exists;
+- ensure there are no new line characters. If they exist, delete it;
+- trim for whitespace at the beginning and in the end of the content;
+- the content origin is sometimes an OCR process. Provide all the corrections needed checking appropriate spelling;
+
+On May, 2024 some fields were added for basic multilingual support. The extra fields are: `locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`.
 The field `locale_2` should use the same format (i.e. `fr_CA`) that OJS uses for it's `locale="en"` attribute.
 
-In March, 2025 fields `issue_cover_image_filename`, `issue_cover_image_filename_alt_text` and `orcid` were added. The first two are repeated accross all the CSV records (rows). The `orcid` must be an URL. In case of many authors, ORCIDs should be separated with `;` in the order of author completition.
+On March, 2025 fields `issue_cover_image_filename`, `issue_cover_image_filename_alt_text` and `orcid` were added. The first two are repeated accross all the CSV records (rows). The `orcid` must be an URL. In case of many authors, ORCIDs should be separated with `;` in the order of author completition.
 
-In December 2025 `roarname`, and `roarid` fields were added. This was necessary to satisfy 3.5 XSD. Mind that if you enter the value for `roarname` in the CSV, you MUST add the value for the `roarid`.
+On December 2025 `roarname`, and `roarid` fields were added. This was necessary to satisfy 3.5 XSD. Mind that if you enter the value for `roarname` in the CSV, you MUST add the value for the `roarid`.
 
 ## Prepare article related metadata and images for the creation of the XML
 
