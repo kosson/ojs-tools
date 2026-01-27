@@ -1,0 +1,261 @@
+[Tue Jan 27 09:26:38.097347 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 09:26:38.097483 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.27.0.3. Set the 'ServerName' directive globally to suppress this message
+[Tue Jan 27 09:26:38.165925 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 09:26:38.165985 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+[Tue Jan 27 09:26:38.177292 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00163: Apache/2.4.66 (Debian) PHP/8.3.29 OpenSSL/3.5.4 configured -- resuming normal operations
+[Tue Jan 27 09:26:38.177346 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[Tue Jan 27 09:26:40.369608 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00170: caught SIGWINCH, shutting down gracefully
+[Tue Jan 27 09:26:43.452053 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 09:26:43.452142 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.27.0.3. Set the 'ServerName' directive globally to suppress this message
+[Tue Jan 27 09:26:43.505859 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 09:26:43.505901 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+[Tue Jan 27 09:26:43.521437 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00163: Apache/2.4.66 (Debian) PHP/8.3.29 OpenSSL/3.5.4 configured -- resuming normal operations
+[Tue Jan 27 09:26:43.521485 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[27-Jan-2026 07:27:03 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'pkp.versions' doesn't exist in /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php:470
+Stack trace:
+#0 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php(470): PDO->prepare('SELECT * FROM v...')
+#1 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php(812): Illuminate\Database\Connection->Illuminate\Database\{closure}('SELECT * FROM v...', Array)
+#2 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php(779): Illuminate\Database\Connection->runQueryCallback('SELECT * FROM v...', Array, Object(Closure))
+#3 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php(461): Illuminate\Database\Connection->run('SELECT * FROM v...', Array, Object(Closure))
+#4 [internal function]: Illuminate\Database\Connection->cursor('SELECT * FROM v...', Array)
+#5 /var/www/html/lib/pkp/classes/site/VersionDAO.php(43): Generator->current()
+#6 /var/www/html/lib/pkp/classes/core/PKPApplication.php(248): PKP\site\VersionDAO->getCurrentVersion()
+#7 /var/www/html/classes/core/Application.php(47): PKP\core\PKPApplication->__construct()
+#8 /var/www/html/lib/pkp/includes/bootstrap.php(37): APP\core\Application->__construct()
+#9 /var/www/html/index.php(18): require_once('/var/www/html/l...')
+#10 {main}
+
+Next Illuminate\Database\QueryException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'pkp.versions' doesn't exist (Connection: mysql, SQL: SELECT * FROM versions WHERE current = 1 AND product_type = core AND product = ojs2) in /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php:825
+Stack trace:
+#0 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php(779): Illuminate\Database\Connection->runQueryCallback('SELECT * FROM v...', Array, Object(Closure))
+#1 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php(461): Illuminate\Database\Connection->run('SELECT * FROM v...', Array, Object(Closure))
+#2 [internal function]: Illuminate\Database\Connection->cursor('SELECT * FROM v...', Array)
+#3 /var/www/html/lib/pkp/classes/site/VersionDAO.php(43): Generator->current()
+#4 /var/www/html/lib/pkp/classes/core/PKPApplication.php(248): PKP\site\VersionDAO->getCurrentVersion()
+#5 /var/www/html/classes/core/Application.php(47): PKP\core\PKPApplication->__construct()
+#6 /var/www/html/lib/pkp/includes/bootstrap.php(37): APP\core\Application->__construct()
+#7 /var/www/html/index.php(18): require_once('/var/www/html/l...')
+#8 {main}
+  thrown in /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php on line 825
+[27-Jan-2026 07:27:04 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'pkp.sessions' doesn't exist in /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php:407
+Stack trace:
+#0 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php(407): PDO->prepare('select * from `...')
+#1 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php(812): Illuminate\Database\Connection->Illuminate\Database\{closure}('select * from `...', Array)
+#2 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php(779): Illuminate\Database\Connection->runQueryCallback('select * from `...', Array, Object(Closure))
+#3 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php(398): Illuminate\Database\Connection->run('select * from `...', Array, Object(Closure))
+#4 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3106): Illuminate\Database\Connection->select('select * from `...', Array, false)
+#5 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3091): Illuminate\Database\Query\Builder->runSelect()
+#6 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3676): Illuminate\Database\Query\Builder->Illuminate\Database\Query\{closure}()
+#7 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3090): Illuminate\Database\Query\Builder->onceWithColumns(Array, Object(Closure))
+#8 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php(343): Illuminate\Database\Query\Builder->get(Array)
+#9 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3013): Illuminate\Database\Query\Builder->first(Array)
+#10 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Session/DatabaseSessionHandler.php(97): Illuminate\Database\Query\Builder->find('sdH3ZUwgBrPXlj9...')
+#11 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Session/DatabaseSessionHandler.php(136): Illuminate\Session\DatabaseSessionHandler->read('sdH3ZUwgBrPXlj9...')
+#12 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Session/Store.php(176): Illuminate\Session\DatabaseSessionHandler->write('sdH3ZUwgBrPXlj9...', 'a:1:{s:6:"_flas...')
+#13 /var/www/html/lib/pkp/classes/core/PKPSessionServiceProvider.php(38): Illuminate\Session\Store->save()
+#14 [internal function]: PKP\core\PKPSessionServiceProvider->PKP\core\{closure}()
+#15 {main}
+
+Next Illuminate\Database\QueryException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'pkp.sessions' doesn't exist (Connection: mysql, SQL: select * from `sessions` where `id` = sdH3ZUwgBrPXlj9GOTUWwyjBxn3t9eLryM1BPDPi limit 1) in /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php:825
+Stack trace:
+#0 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php(779): Illuminate\Database\Connection->runQueryCallback('select * from `...', Array, Object(Closure))
+#1 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php(398): Illuminate\Database\Connection->run('select * from `...', Array, Object(Closure))
+#2 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3106): Illuminate\Database\Connection->select('select * from `...', Array, false)
+#3 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3091): Illuminate\Database\Query\Builder->runSelect()
+#4 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3676): Illuminate\Database\Query\Builder->Illuminate\Database\Query\{closure}()
+#5 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3090): Illuminate\Database\Query\Builder->onceWithColumns(Array, Object(Closure))
+#6 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php(343): Illuminate\Database\Query\Builder->get(Array)
+#7 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3013): Illuminate\Database\Query\Builder->first(Array)
+#8 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Session/DatabaseSessionHandler.php(97): Illuminate\Database\Query\Builder->find('sdH3ZUwgBrPXlj9...')
+#9 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Session/DatabaseSessionHandler.php(136): Illuminate\Session\DatabaseSessionHandler->read('sdH3ZUwgBrPXlj9...')
+#10 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Session/Store.php(176): Illuminate\Session\DatabaseSessionHandler->write('sdH3ZUwgBrPXlj9...', 'a:1:{s:6:"_flas...')
+#11 /var/www/html/lib/pkp/classes/core/PKPSessionServiceProvider.php(38): Illuminate\Session\Store->save()
+#12 [internal function]: PKP\core\PKPSessionServiceProvider->PKP\core\{closure}()
+#13 {main}
+  thrown in /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Database/Connection.php on line 825
+[Tue Jan 27 09:28:00.300086 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00170: caught SIGWINCH, shutting down gracefully
+[Tue Jan 27 09:28:01.887211 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 09:28:01.887334 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.27.0.3. Set the 'ServerName' directive globally to suppress this message
+[Tue Jan 27 09:28:01.940207 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 09:28:01.940247 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+[Tue Jan 27 09:28:01.950204 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00163: Apache/2.4.66 (Debian) PHP/8.3.29 OpenSSL/3.5.4 configured -- resuming normal operations
+[Tue Jan 27 09:28:01.950249 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[27-Jan-2026 07:31:41 UTC] PHP Deprecated:  Optional parameter $contextId declared before required parameter $key is implicitly treated as a required parameter in /var/www/html/lib/pkp/classes/emailTemplate/Repository.php on line 53
+[27-Jan-2026 07:31:41 UTC] PHP Deprecated:  Optional parameter $contextId declared before required parameter $key is implicitly treated as a required parameter in /var/www/html/lib/pkp/classes/emailTemplate/DAO.php on line 134
+[27-Jan-2026 07:31:42 UTC] PHP Warning:  mkdir(): Permission denied in /var/www/html/lib/pkp/classes/file/FileManager.php on line 424
+[27-Jan-2026 07:31:42 UTC] PHP Fatal error:  Uncaught AssertionError: assert(false) in /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php:67
+Stack trace:
+#0 /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php(67): assert(false, 'assert(false)')
+#1 /var/www/html/lib/pkp/classes/install/Installer.php(957): PKP\scheduledTask\ScheduledTask->__construct()
+#2 [internal function]: PKP\install\Installer->updateRorRegistryDataset(Object(APP\install\Install), Array)
+#3 /var/www/html/lib/pkp/classes/install/Installer.php(491): call_user_func(Array, Object(APP\install\Install), Array)
+#4 /var/www/html/lib/pkp/classes/install/Installer.php(298): PKP\install\Installer->executeAction(Array)
+#5 /var/www/html/lib/pkp/classes/install/Installer.php(207): PKP\install\Installer->executeInstaller()
+#6 /var/www/html/lib/pkp/classes/install/form/InstallForm.php(198): PKP\install\Installer->execute()
+#7 /var/www/html/lib/pkp/pages/install/InstallHandler.php(93): PKP\install\form\InstallForm->execute()
+#8 [internal function]: PKP\pages\install\InstallHandler->install(Array, Object(APP\core\Request))
+#9 /var/www/html/lib/pkp/classes/core/PKPRouter.php(327): call_user_func(Array, Array, Object(APP\core\Request))
+#10 /var/www/html/lib/pkp/classes/core/PKPPageRouter.php(249): PKP\core\PKPRouter->_authorizeInitializeAndCallRequest(Array, Object(APP\core\Request), Array, false)
+#11 /var/www/html/lib/pkp/classes/core/Dispatcher.php(157): PKP\core\PKPPageRouter->route(Object(APP\core\Request))
+#12 /var/www/html/lib/pkp/classes/core/PKPApplication.php(429): PKP\core\Dispatcher->dispatch(Object(APP\core\Request))
+#13 /var/www/html/index.php(21): PKP\core\PKPApplication->execute()
+#14 {main}
+  thrown in /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php on line 67
+[Tue Jan 27 09:40:41.341564 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00170: caught SIGWINCH, shutting down gracefully
+[Tue Jan 27 09:41:55.624290 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 09:41:55.624483 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.27.0.3. Set the 'ServerName' directive globally to suppress this message
+[Tue Jan 27 09:41:55.690293 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 09:41:55.690334 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+[Tue Jan 27 09:41:55.710726 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00163: Apache/2.4.66 (Debian) PHP/8.3.29 OpenSSL/3.5.4 configured -- resuming normal operations
+[Tue Jan 27 09:41:55.710777 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[Tue Jan 27 09:44:56.345517 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00170: caught SIGWINCH, shutting down gracefully
+[Tue Jan 27 09:46:45.007592 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 09:46:45.007703 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.27.0.3. Set the 'ServerName' directive globally to suppress this message
+[Tue Jan 27 09:46:45.062446 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 09:46:45.062487 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+[Tue Jan 27 09:46:45.072247 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00163: Apache/2.4.66 (Debian) PHP/8.3.29 OpenSSL/3.5.4 configured -- resuming normal operations
+[Tue Jan 27 09:46:45.072291 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[Tue Jan 27 09:48:46.579784 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00170: caught SIGWINCH, shutting down gracefully
+[Tue Jan 27 09:48:49.052811 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 09:48:49.052916 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.27.0.3. Set the 'ServerName' directive globally to suppress this message
+[Tue Jan 27 09:48:49.103805 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 09:48:49.103846 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+[Tue Jan 27 09:48:49.112772 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00163: Apache/2.4.66 (Debian) PHP/8.3.29 OpenSSL/3.5.4 configured -- resuming normal operations
+[Tue Jan 27 09:48:49.112817 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[27-Jan-2026 08:05:02 UTC] PHP Deprecated:  Optional parameter $contextId declared before required parameter $key is implicitly treated as a required parameter in /var/www/html/lib/pkp/classes/emailTemplate/Repository.php on line 53
+[27-Jan-2026 08:05:02 UTC] PHP Deprecated:  Optional parameter $contextId declared before required parameter $key is implicitly treated as a required parameter in /var/www/html/lib/pkp/classes/emailTemplate/DAO.php on line 134
+[27-Jan-2026 08:05:02 UTC] PHP Warning:  mkdir(): Permission denied in /var/www/html/lib/pkp/classes/file/FileManager.php on line 424
+[27-Jan-2026 08:05:02 UTC] PHP Fatal error:  Uncaught AssertionError: assert(false) in /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php:67
+Stack trace:
+#0 /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php(67): assert(false, 'assert(false)')
+#1 /var/www/html/lib/pkp/classes/install/Installer.php(957): PKP\scheduledTask\ScheduledTask->__construct()
+#2 [internal function]: PKP\install\Installer->updateRorRegistryDataset(Object(APP\install\Install), Array)
+#3 /var/www/html/lib/pkp/classes/install/Installer.php(491): call_user_func(Array, Object(APP\install\Install), Array)
+#4 /var/www/html/lib/pkp/classes/install/Installer.php(298): PKP\install\Installer->executeAction(Array)
+#5 /var/www/html/lib/pkp/classes/install/Installer.php(207): PKP\install\Installer->executeInstaller()
+#6 /var/www/html/lib/pkp/classes/install/form/InstallForm.php(198): PKP\install\Installer->execute()
+#7 /var/www/html/lib/pkp/pages/install/InstallHandler.php(93): PKP\install\form\InstallForm->execute()
+#8 [internal function]: PKP\pages\install\InstallHandler->install(Array, Object(APP\core\Request))
+#9 /var/www/html/lib/pkp/classes/core/PKPRouter.php(327): call_user_func(Array, Array, Object(APP\core\Request))
+#10 /var/www/html/lib/pkp/classes/core/PKPPageRouter.php(249): PKP\core\PKPRouter->_authorizeInitializeAndCallRequest(Array, Object(APP\core\Request), Array, false)
+#11 /var/www/html/lib/pkp/classes/core/Dispatcher.php(157): PKP\core\PKPPageRouter->route(Object(APP\core\Request))
+#12 /var/www/html/lib/pkp/classes/core/PKPApplication.php(429): PKP\core\Dispatcher->dispatch(Object(APP\core\Request))
+#13 /var/www/html/index.php(21): PKP\core\PKPApplication->execute()
+#14 {main}
+  thrown in /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php on line 67
+[Tue Jan 27 10:06:43.600962 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00170: caught SIGWINCH, shutting down gracefully
+[Tue Jan 27 10:07:27.441696 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 10:07:27.441888 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.27.0.3. Set the 'ServerName' directive globally to suppress this message
+[Tue Jan 27 10:07:27.495621 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 10:07:27.495660 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+[Tue Jan 27 10:07:27.508785 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00163: Apache/2.4.66 (Debian) PHP/8.3.29 OpenSSL/3.5.4 configured -- resuming normal operations
+[Tue Jan 27 10:07:27.508828 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[Tue Jan 27 10:08:03.454052 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00170: caught SIGWINCH, shutting down gracefully
+[Tue Jan 27 10:08:39.216643 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 10:08:39.216826 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.27.0.3. Set the 'ServerName' directive globally to suppress this message
+[Tue Jan 27 10:08:39.268642 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 10:08:39.268682 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+[Tue Jan 27 10:08:39.278948 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00163: Apache/2.4.66 (Debian) PHP/8.3.29 OpenSSL/3.5.4 configured -- resuming normal operations
+[Tue Jan 27 10:08:39.278992 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[27-Jan-2026 08:14:09 UTC] PHP Deprecated:  Optional parameter $contextId declared before required parameter $key is implicitly treated as a required parameter in /var/www/html/lib/pkp/classes/emailTemplate/Repository.php on line 53
+[27-Jan-2026 08:14:09 UTC] PHP Deprecated:  Optional parameter $contextId declared before required parameter $key is implicitly treated as a required parameter in /var/www/html/lib/pkp/classes/emailTemplate/DAO.php on line 134
+[27-Jan-2026 08:14:10 UTC] PHP Warning:  mkdir(): Permission denied in /var/www/html/lib/pkp/classes/file/FileManager.php on line 424
+[27-Jan-2026 08:14:10 UTC] PHP Fatal error:  Uncaught AssertionError: assert(false) in /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php:67
+Stack trace:
+#0 /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php(67): assert(false, 'assert(false)')
+#1 /var/www/html/lib/pkp/classes/install/Installer.php(957): PKP\scheduledTask\ScheduledTask->__construct()
+#2 [internal function]: PKP\install\Installer->updateRorRegistryDataset(Object(APP\install\Install), Array)
+#3 /var/www/html/lib/pkp/classes/install/Installer.php(491): call_user_func(Array, Object(APP\install\Install), Array)
+#4 /var/www/html/lib/pkp/classes/install/Installer.php(298): PKP\install\Installer->executeAction(Array)
+#5 /var/www/html/lib/pkp/classes/install/Installer.php(207): PKP\install\Installer->executeInstaller()
+#6 /var/www/html/lib/pkp/classes/install/form/InstallForm.php(198): PKP\install\Installer->execute()
+#7 /var/www/html/lib/pkp/pages/install/InstallHandler.php(93): PKP\install\form\InstallForm->execute()
+#8 [internal function]: PKP\pages\install\InstallHandler->install(Array, Object(APP\core\Request))
+#9 /var/www/html/lib/pkp/classes/core/PKPRouter.php(327): call_user_func(Array, Array, Object(APP\core\Request))
+#10 /var/www/html/lib/pkp/classes/core/PKPPageRouter.php(249): PKP\core\PKPRouter->_authorizeInitializeAndCallRequest(Array, Object(APP\core\Request), Array, false)
+#11 /var/www/html/lib/pkp/classes/core/Dispatcher.php(157): PKP\core\PKPPageRouter->route(Object(APP\core\Request))
+#12 /var/www/html/lib/pkp/classes/core/PKPApplication.php(429): PKP\core\Dispatcher->dispatch(Object(APP\core\Request))
+#13 /var/www/html/index.php(21): PKP\core\PKPApplication->execute()
+#14 {main}
+  thrown in /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php on line 67
+[Tue Jan 27 10:15:51.727532 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00170: caught SIGWINCH, shutting down gracefully
+[Tue Jan 27 10:15:55.045001 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 10:15:55.045099 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 172.27.0.3. Set the 'ServerName' directive globally to suppress this message
+[Tue Jan 27 10:15:55.096819 2026] [ssl:warn] [pid 1:tid 1] AH01906: www.example.com:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Tue Jan 27 10:15:55.096859 2026] [ssl:warn] [pid 1:tid 1] AH01909: www.example.com:443:0 server certificate does NOT include an ID which matches the server name
+[Tue Jan 27 10:15:55.105793 2026] [mpm_prefork:notice] [pid 1:tid 1] AH00163: Apache/2.4.66 (Debian) PHP/8.3.29 OpenSSL/3.5.4 configured -- resuming normal operations
+[Tue Jan 27 10:15:55.105837 2026] [core:notice] [pid 1:tid 1] AH00094: Command line: 'apache2 -D FOREGROUND'
+[27-Jan-2026 08:15:57 UTC] PHP Warning:  mkdir(): Permission denied in /var/www/html/lib/pkp/classes/file/FileManager.php on line 424
+[27-Jan-2026 08:15:57 UTC] PHP Fatal error:  Uncaught AssertionError: assert(false) in /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php:67
+Stack trace:
+#0 /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php(67): assert(false, 'assert(false)')
+#1 /var/www/html/plugins/importexport/doaj/DOAJInfoSender.php(42): PKP\scheduledTask\ScheduledTask->__construct(Array)
+#2 /var/www/html/classes/plugins/PubObjectsExportPlugin.php(593): APP\plugins\importexport\doaj\DOAJInfoSender->__construct()
+#3 /var/www/html/lib/pkp/classes/scheduledTask/PKPScheduler.php(136): APP\plugins\PubObjectsExportPlugin->registerSchedules(Object(APP\scheduler\Scheduler))
+#4 /var/www/html/lib/pkp/classes/core/ScheduleServiceProvider.php(87): PKP\scheduledTask\PKPScheduler->registerPluginSchedules()
+#5 [internal function]: PKP\core\ScheduleServiceProvider->PKP\core\{closure}()
+#6 {main}
+  thrown in /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php on line 67
+[27-Jan-2026 08:16:58 UTC] PHP Warning:  mkdir(): Permission denied in /var/www/html/lib/pkp/classes/file/FileManager.php on line 424
+[27-Jan-2026 08:16:58 UTC] PHP Fatal error:  Uncaught AssertionError: assert(false) in /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php:67
+Stack trace:
+#0 /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php(67): assert(false, 'assert(false)')
+#1 /var/www/html/plugins/importexport/doaj/DOAJInfoSender.php(42): PKP\scheduledTask\ScheduledTask->__construct(Array)
+#2 /var/www/html/classes/plugins/PubObjectsExportPlugin.php(593): APP\plugins\importexport\doaj\DOAJInfoSender->__construct()
+#3 /var/www/html/lib/pkp/classes/scheduledTask/PKPScheduler.php(136): APP\plugins\PubObjectsExportPlugin->registerSchedules(Object(APP\scheduler\Scheduler))
+#4 /var/www/html/lib/pkp/classes/core/ScheduleServiceProvider.php(87): PKP\scheduledTask\PKPScheduler->registerPluginSchedules()
+#5 [internal function]: PKP\core\ScheduleServiceProvider->PKP\core\{closure}()
+#6 {main}
+  thrown in /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php on line 67
+[27-Jan-2026 08:17:50 UTC] PHP Warning:  mkdir(): No such file or directory in /var/www/html/lib/pkp/classes/file/FileManager.php on line 424
+[27-Jan-2026 08:17:50 UTC] PHP Warning:  mkdir(): No such file or directory in /var/www/html/lib/pkp/classes/file/FileManager.php on line 424
+[27-Jan-2026 08:17:50 UTC] PHP Warning:  mkdir(): No such file or directory in /var/www/html/lib/pkp/classes/file/FileManager.php on line 424
+[27-Jan-2026 08:17:50 UTC] PHP Deprecated:  Optional parameter $contextId declared before required parameter $key is implicitly treated as a required parameter in /var/www/html/lib/pkp/classes/emailTemplate/Repository.php on line 53
+[27-Jan-2026 08:17:50 UTC] PHP Deprecated:  Optional parameter $contextId declared before required parameter $key is implicitly treated as a required parameter in /var/www/html/lib/pkp/classes/emailTemplate/DAO.php on line 134
+[27-Jan-2026 08:17:50 UTC] PHP Deprecated:  Using unregistered static method "PKP\components\forms\context\PKPThemeForm::FORM_THEME" in a template is deprecated and will be removed in a future release. Use Smarty::registerClass to explicitly register a class for access. in /var/www/html/lib/pkp/lib/vendor/smarty/smarty/libs/sysplugins/smarty_internal_templateparser.php on line 2428
+[27-Jan-2026 08:17:50 UTC] PHP Deprecated:  Using unregistered static method "PKP\components\forms\context\PKPRestrictBulkEmailsForm::FORM_RESTRICT_BULK_EMAILS" in a template is deprecated and will be removed in a future release. Use Smarty::registerClass to explicitly register a class for access. in /var/www/html/lib/pkp/lib/vendor/smarty/smarty/libs/sysplugins/smarty_internal_templateparser.php on line 2428
+[27-Jan-2026 08:18:12 UTC] PHP Warning:  mkdir(): Permission denied in /var/www/html/lib/pkp/classes/file/FileManager.php on line 424
+[27-Jan-2026 08:18:12 UTC] PHP Fatal error:  Uncaught AssertionError: assert(false) in /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php:67
+Stack trace:
+#0 /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php(67): assert(false, 'assert(false)')
+#1 /var/www/html/plugins/importexport/doaj/DOAJInfoSender.php(42): PKP\scheduledTask\ScheduledTask->__construct(Array)
+#2 /var/www/html/classes/plugins/PubObjectsExportPlugin.php(593): APP\plugins\importexport\doaj\DOAJInfoSender->__construct()
+#3 /var/www/html/lib/pkp/classes/scheduledTask/PKPScheduler.php(136): APP\plugins\PubObjectsExportPlugin->registerSchedules(Object(APP\scheduler\Scheduler))
+#4 /var/www/html/lib/pkp/classes/core/ScheduleServiceProvider.php(87): PKP\scheduledTask\PKPScheduler->registerPluginSchedules()
+#5 [internal function]: PKP\core\ScheduleServiceProvider->PKP\core\{closure}()
+#6 {main}
+  thrown in /var/www/html/lib/pkp/classes/scheduledTask/ScheduledTask.php on line 67
+[27-Jan-2026 08:18:13 UTC] PHP Warning:  mkdir(): Permission denied in /var/www/html/lib/pkp/classes/file/FileManager.php on line 424
+[27-Jan-2026 08:18:13 UTC] UsageEventLog: Couldn't create /usageStats/usageEventLogs.
+[27-Jan-2026 08:18:13 UTC] PHP Warning:  file_put_contents(/usageStats/salt): Failed to open stream: No such file or directory in /var/www/html/lib/pkp/classes/statistics/PKPStatisticsHelper.php on line 158
+[27-Jan-2026 08:18:13 UTC] PHP Warning:  filemtime(): stat failed for /usageStats/salt in /var/www/html/lib/pkp/classes/observers/listeners/LogUsageEvent.php on line 213
+[27-Jan-2026 08:18:13 UTC] PHP Warning:  file_put_contents(/usageStats/salt): Failed to open stream: No such file or directory in /var/www/html/lib/pkp/classes/statistics/PKPStatisticsHelper.php on line 158
+[27-Jan-2026 08:18:13 UTC] PHP Warning:  mkdir(): Permission denied in /var/www/html/lib/pkp/classes/file/FileManager.php on line 424
+[27-Jan-2026 08:18:13 UTC] UsageEventLog: Couldn't create /usageStats/usageEventLogs.
+[27-Jan-2026 08:18:13 UTC] PHP Warning:  fopen(/usageStats/usageEventLogs/usage_events_20260127.log): Failed to open stream: No such file or directory in /var/www/html/lib/pkp/classes/observers/listeners/LogUsageEvent.php on line 104
+[27-Jan-2026 08:18:13 UTC] PHP Fatal error:  Uncaught TypeError: flock(): Argument #1 ($stream) must be of type resource, false given in /var/www/html/lib/pkp/classes/observers/listeners/LogUsageEvent.php:105
+Stack trace:
+#0 /var/www/html/lib/pkp/classes/observers/listeners/LogUsageEvent.php(105): flock(false, 2)
+#1 /var/www/html/lib/pkp/classes/observers/listeners/LogUsageEvent.php(53): PKP\observers\listeners\LogUsageEvent->logUsageEvent('{"time":"2026-0...')
+#2 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Events/Dispatcher.php(479): PKP\observers\listeners\LogUsageEvent->handle(Object(APP\observers\events\UsageEvent))
+#3 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Events/Dispatcher.php(287): Illuminate\Events\Dispatcher->Illuminate\Events\{closure}('APP\\observers\\e...', Array)
+#4 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Events/Dispatcher.php(267): Illuminate\Events\Dispatcher->invokeListeners('APP\\observers\\e...', Array, false)
+#5 /var/www/html/lib/pkp/lib/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(473): Illuminate\Events\Dispatcher->dispatch('APP\\observers\\e...')
+#6 /var/www/html/pages/index/IndexHandler.php(84): event(Object(APP\observers\events\UsageEvent))
+#7 [internal function]: APP\pages\index\IndexHandler->index(Array, Object(APP\core\Request))
+#8 /var/www/html/lib/pkp/classes/core/PKPRouter.php(327): call_user_func(Array, Array, Object(APP\core\Request))
+#9 /var/www/html/lib/pkp/classes/core/PKPPageRouter.php(249): PKP\core\PKPRouter->_authorizeInitializeAndCallRequest(Array, Object(APP\core\Request), Array, false)
+#10 /var/www/html/lib/pkp/classes/core/Dispatcher.php(157): PKP\core\PKPPageRouter->route(Object(APP\core\Request))
+#11 /var/www/html/lib/pkp/classes/core/PKPApplication.php(429): PKP\core\Dispatcher->dispatch(Object(APP\core\Request))
+#12 /var/www/html/index.php(21): PKP\core\PKPApplication->execute()
+#13 {main}
+  thrown in /var/www/html/lib/pkp/classes/observers/listeners/LogUsageEvent.php on line 105

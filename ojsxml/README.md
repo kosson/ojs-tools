@@ -1,29 +1,13 @@
-![image](doc/img/OJS-XML-Issue-Creator-Index.png)
-# CSV to OJS XML Import for OJS 3.5
-
-This is an application written in PHP. It is transforming a CSV file into a 3.5 OJS valid XML ready to be imported. Although it is developed on Linux/GNU Ubuntu operating system, efforts are put into it to make it a full web application able to be run on Windows as well. This is NOT a comprehensive CSV to OJS XML conversion, and some fields are left out.
-
-## Quick start
-
-If you are running Linux, run the script `run-server.sh` to start the PHP application. Make sure the script is executable. Adapt the application settings to your environment modifying the values of the `.env` file in the root of the application.
-If you are running Windows, run the the script `run-server.bat`. Go to your preferate browser and open a pege on the `localhost:8000`. The GUI will be available to you. You have to have a zip archive containing the CSV file (see bellow the fields), and at least the cover of the issue, if there is one.
-
-Before generating the XML file followed by the intent of using the import plugin, check all the data from the CSV again, and again. Things you have to be very careful with:
-
-- the abbreviation of the sections MUST be identical to those already set in the OJS instance you want to import. Be very, very thorough. Otherwise "ghost" records will be created in the database.
-
-After import check all the articles and designate the primary contact. This is not done automatically by OJS import plugin.
-
-## Historic context
+# CSV to OJS XML Import for OJS 3.5.0-3
 
 This collection of scripts and workflows was adapted from https://github.com/rkbuoe/ojsxml repo, which, in turn is a fork of the original repo from https://github.com/ualbertalib/ojsxml.
 
 This application will convert a CSV file into the OJS XML native import file. Following this guide you will be able to use *Native XML Plugin* to upload whole issues, if desired, or use the CLI import scripts. This application is developed and run on a Ubuntu/Mint operating system. It is not tried out on Windows OS.
 
-The XSD of the OJS version is included with this project in the `schema` subdirectory.
-Sample CSV files for both users and issues are included in the `examples` subdirectory.
+The XSD of the OJS version is included with this project in the `docroot/output` directory.
+Sample CSV files for both users and issues are included in the `examples` directory.
 
-## Linux/GNU Ubuntu installation
+Note: This is NOT a comprehensive CSV to OJS XML conversion, and many fields are left out.
 
 It must be mentioned, that the script needs the following packages to be installed so that SQLite3 is available, and the specific error is silenced.
 
@@ -32,7 +16,7 @@ sudo apt install sqlite3 php-sqlite3
 ```
 
 It would be very useful to be mentioned that a prior check with `php -m` for the `xmlwriter` would eliminate the specific error concerning the module.
-If it is not installed, one should do the following on Ubuntu/Mint 24.04:
+If it is not installed, one should do the following on Ubuntu 24.04:
 
 ```bash
 sudo apt install php8.3-mbstring php8.3-bcmath php8.3-zip php8.3-gd php8.3-curl php8.3-xml php-cli unzip -y
@@ -48,12 +32,12 @@ This is needed to extract the first page of the PDF files to use as cover images
 
 ## Known Issues
 
-* Each issue export XML file can contain __only one issue__. The adaptation of the scripts targets 3.5. Multiple issues/XML file can lead to database corruption.
+* Each issue export XML file can contain __only one issue__. The adaptation of the scripts target 3.4. Multiple issues/XML file can lead to database corruption.
 * The journal's current issue must be manually set upon import completion. This conversion tool does not indicate which issue should be the current one.
 * In the case of the users, the `user_groups` section of the XML must be manually added and is journal specific. This can be found at the top of a User export XML from the current journal (see below for example).
 * CSV files should be UTF8 encoded or non-ASCII characters will not appear correctly.
 
-## How to Use the CLI commands in Linux/GNU systems
+## How to Use
 
 From the CLI `--help` command:
 
@@ -72,459 +56,42 @@ php csvToXmlConverter issues username ./input_directory ./output_directory
 
 ## Preparing the issue CSV
 
-The rules by which the CSV file is created and its records as following.
+### The field names for an issue
 
-General considerations:
+The CSV file should include the following headings:
 
-- each line in the file correspond to a record, that being a scientific article or literature review;
+`issueTitle,sectionTitle,sectionAbbrev,authors,affiliation,roarname,roarid,orcid,DOI,articleTitle,year,datePublished,volume,issue,startPage,endPage,articleAbstract,galleyLabel,authorEmail,fileName,keywords,citations,cover_image_filename,cover_image_alt_text,issue_cover_image_filename,issue_cover_image_filename_alt_text,licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`
 
-## Column names
+### Explanation of the fields
 
-The following list are the names of the columns for each record in the CSV file. The following could constitute the starting header for a CSV file if copied and saved in a file with CSV extension:
+You can have multiple authors in the "authors" field by separating them with a semi-colon. Also, use a comma to separating first and last names.
 
-```csv
-issueTitle,sectionTitle,sectionAbbrev,authors,affiliation,roarname,roarid,orcid,DOI,articleTitle,year,datePublished,volume,issue,startPage,endPage,articleAbstract,galleyLabel,authorEmail,fileName,keywords,citations,cover_image_filename,cover_image_alt_text,issue_cover_image_filename,issue_cover_image_filename_alt_text,licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2
-```
+Example: `Smith, John;Johnson, Jane ...`.
 
-First operations:
+The same rules for authors also apply to affiliation. Separate different affiliations with a semi-colon. If there is only 1 affiliation and multiple authors that 1 affiliation will be applied to all authors.
 
-- ensure all the columns exist in the CSV and are redacted exactly as in the header example. Do all the modifications necesary, adding the missing fields or correcting the existing ones;
-- trim all the fileds values so that there are no spaces infront or following the value;
+Citations can be separated with a new line.
 
-## Rules and Operations
+The date format for the "datePublished" must be in the format `YYYY-MM-DD`. Otherwise, the date will be set automatically to 1969-12-31, which is the default date in OJS. If you do not know the date of publishing set it according to the publication apparitions during the year. For example, if the publication has only one issue in a year, and you do not know exactly when it was published, set the date to the first day of the year, e.g. `2022-01-01`. If you have multiple issues in a year, set the date to the first day of the month for the number of the issue in the year.
 
-The following are the rules and needed Operations for every value in the record.
+The following fields are optional and can be left empty:
 
-### For the value of `issueTitle`
+`DOI, volume, issue, subtitle, keywords, citations, affiliation, cover image (both cover_image_filename and cover_image_alt_text must be included or omitted),licenseUrl,copyrightHolder,copyrightYear,locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`
 
-The value of `issueTitle` is text and follows the constraints:
-
-- MUST EXIST, and
-- MUST BE repeated for all the records in the file.
-
-#### Operations for `issueTitle`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, replace with space;
-- trim for whitespace at the beginning and in the end of the text content;
-- make sure all there are no mistakes in the sibling records. Mistake means letters ommited, inversed or the value written with caps;
-
-### For the value of `sectionTitle`
-
-The value of `sectionTitle` is text and follows the constraints:
-
-- MUST EXIST.
-
-#### Operations for `sectionTitle`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, replace with space;
-- trim for whitespace at the beginning and in the end of the text content;
-
-#### Human checks  for `sectionTitle`
-
-- The value of `sectionTitle` MUST BE already set in the Open Journal System application for the corresponding journal. See Journal settings.
-
-### For the value of `sectionAbbrev`
-
-The value of `sectionAbbrev` is text and MUST BE already set in the Open Journal System application for the corresponding journal.
-
-#### Operations for `sectionAbbrev`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, replace with space;
-- trim for whitespace at the beginning and in the end of the text content;
-
-### For the value of `authors`
-
-At least one author must be mentioned.
-You can have multiple authors in the `authors` field separating them with a semicolon. Also, use a comma to separating first and last names. Example: `Smith, John;Johnson, Jane`
-
-#### Operations for `authors`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, replace with space;
-- trim for whitespace at the beginning and in the end of the text content;
-- ensure the first and the last name are sepparated by comma. Mind that there are cases where the names also have initials in the form of a caps letter followed by a dot;
-- detect any formating errors and correct it.
-
-### For the value of `affiliation`
-
-You can have multiple values in the `affiliation` field separated by a semicolon.
-The value of `sectionTitle` is text. This value is optional.
-
-#### Operations for `affiliation`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, replace with space;
-- trim for whitespace at the beginning and in the end of the text content;
-- detect any formating errors and correct it.
-
-#### Human checks  for `affiliation`
-
-If there is only 1 affiliation and multiple authors that 1 affiliation will be applied to all authors.
-
-### For the value of `roarname`
-
-The value of `roarname` is text. This value is optional.
-
-#### Operations for `roarname`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, replace with space;
-- trim for whitespace at the beginning and in the end of the text content.
-
-#### Human checks for `roarname`
-
-The value must picked from Registry of Research Organization Registry (ROR) available at https://ror.org/
-
-### For the value of `roarid`
-
-The value of `roarname` is text. This value MUST EXIST if `roarname` field has an optional value.
-
-#### Operations for `roarid`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, replace with space;
-- trim for whitespace at the beginning and in the end of the text content.
-
-#### Human checks for `roarid`
-
-The value must picked from Registry of Research Organization Registry (ROR) available at https://ror.org/
-
-### For the value of `orcid`
-
-The value of `orcid` is text representation of an URL. This value is optional.
-
-#### Operations for `orcid`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, replace with space;
-- trim for whitespace at the beginning and in the end of the text content.
-- if multiple URLs representing ORCIDs are in the field, it must be redacted as a list of URLs separated by semicolons.
-
-#### Human checks for `orcid`
-
-It should be checked against https://orcid.org/.
-If one or more URLs are added, the values will correspond to the authors in the order of their apparition in the semicolon separated list in the field of `authors`.
-
-### For the value of `DOI`
-
-The value of `DOI` is text. This value is optional.
-
-#### Operations for `DOI`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, replace with space;
-- trim for whitespace at the beginning and in the end of the text content.
-
-#### Human checks for `DOI`
-
-It should be checked against https://dx.doi.org/ to see if it is still dereferencing correctly.
-
-### For the value of `articleTitle`
-
-The value of `articleTitle` is text. It MUST exist.
-
-#### Operations for `articleTitle`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, replace with space;
-- trim for whitespace at the beginning and in the end of the text content.
-
-### For the value of `year`
-
-This is a number value representing the year of publication for the volume.
-
-#### Operations for `year`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the text content;
-- check if the text in the cell is actually a year.
-
-### For the value of `datePublished`
-
-The date format for the `datePublished` and it MUST BE in the format `YYYY-MM-DD`. This is optional.
-
-#### Operations for `datePublished`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the text content;
-- check if the text in the cell is actually a calendaristic date.
-
-#### Human checks for `datePublished`
-
-Otherwise, the date will be set automatically to the value 1970-01-01, which is the default date in OJS. If you do not know the date of publishing set it according to the publication apparitions during the year. For example, if the publication has only one issue in a year, and you do not know exactly when it was published, set the date to the first day of the year, e.g. 2022-01-01. If you have multiple issues in a year, set the date to the first day of the month for the number of the issue in the year.
-
-### For the value of `volume`
-
-This is a number value representing the number of the volume. It is an optional value.
-
-#### Operations for `volume`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content;
-- check if the value in the cell is actually a number.
-
-### For the value of `issue`
-
-This is a number value representing the issue number. It is an optional value.
-
-#### Operations for `issue`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content;
-- check if the value in the cell is actually a number.
-
-### For the value of `startPage`
-
-This is a number value representing the start page. It is an optional value.
-
-#### Operations for `startPage`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content;
-- check if the value in the cell is actually a number.
-
-### For the value of `endPage`
-
-This is a number value representing the start page. If the value of `startPage` is set, then this MUST BE set.
-
-#### Operations for `endPage`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content;
-- check if the value in the cell is actually a number.
-
-### For the value of `articleAbstract`
-
-This is a multiline text value. This value is optional.
-
-#### Operations for `articleAbstract`
-
-- check if it exists;
-- trim for whitespace at the beginning and in the end of the content;
-- the content origin is sometimes an OCR process. Provide all the corrections needed checking appropriate spelling;
-
-### For the value of `galleyLabel`
-
-This is a text value usually indicating the type of file the final editorial form is. The usual is `PDF`. It is not a mandatory value.
-
-#### Operations for `galleyLabel`
-
-- check if it exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content;
-
-### For the value of `authorEmail`
-
-This is a text value. If at least one author is mentioned, one email address SHOULD BE mentioned. The value is optional.
-
-#### Operations for `authorEmail`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content;
-- if multiple email addresses are mentioned, they must be separated by semicolon.
-
-#### Human checks for `authorEmail`
-
-If one email exist, this should be the value entered.
-If one or more email addresses are added, the values will correspond to the authors in the order of their apparition in the semicolon separated list in the field of `authors`.
-
-### For the value of `fileName`
-
-This is a text value. It is the name of the PDF file or the type you have mentioned in the `galleyLabel` field. Represents the content of the article (record). This value is optional, but if you mentioned the value of `galleyLabel`, it means there is a file as well.
-
-#### Operations for `fileName`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content;
-- check if there is a file in the directory where the CSV file is with the name mentioned as value.
-
-### For the value of `keywords`
-
-This field has a text value. This is an optional value.
-If there are more than one keywords, these should be in a list of values separated by semicolons.
-
-#### Operations for `keywords`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content.
-
-### For the value of `citations`
-
-This is a field with multiline text.
-Citations SHOULD BE separated with a single new line.
-
-#### Operations for `citations`
-
-- check if the value exists;
-- the content sometimes is a product of OCR. This means the citations are split across multiple lines. Do your best to correct the text. Take into consideration the fact these citations are numbered. For example, the begining looks like `1.` or `23.` for that matter. Devise euristics and correction algorithms for such cases;
-- ensure every citation is on its own line;
-- trim for whitespace at the beginning and in the end of the content.
-
-###  For the value of `cover_image_filename`
-
-This is a text value. It is the name of the JPG or PNG file that is the cover of the article. This will be a repeated value for all the records.
-
-#### Operations for `cover_image_filename`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content;
-- check if there is a file in the directory where the CSV file is with the name mentioned as value.
-
-### For the value of `cover_image_alt_text`
-
-This is a text value. It is used for the alt value associated with the image representation of the `cover_image_filename`.
-
-#### Operations for `cover_image_alt_text`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content.
-
-### For the value of `issue_cover_image_filename`
-
-This is a text value. It is the name of the JPG or PNG file that is the cover of the issue. This will be a repeated value for all the records. It is optional.
-
-#### Operations for `issue_cover_image_filename`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content;
-- check if there is a file in the directory where the CSV file is with the name mentioned as value.
-
-### For the value of `issue_cover_image_filename_alt_text`
-
-This is a text value. It is used for the alt value associated with the image representation of the `issue_cover_image_filename` field.
-
-#### Operations for `issue_cover_image_filename_alt_text`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content.
-
-### For the value of `licenseUrl`
-
-This value is a text value representing an URL that leads to a license. Usually that is Creative Commons license. This value is optional.
-
-#### Operations for `licenseUrl`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content;
-- check if it is an URL.
-
-### For the value of `copyrightHolder`
-
-This is a text value. This is the name of the body entitled to hold the license.
-
-#### Operations for `copyrightHolder`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content.
-
-### For the value of `locale_2`
-
-This is a text value of a I18N locale. It is mandatory if you add values to the `issueTitle_2`, `sectionTitle_2`, `articleTitle_2` and `articleAbstract_2` fields. A list of the locales accepted here: https://github.com/ladjs/i18n-locales. This is the language of the text in the fields mentioned.
-
-#### Operations for `locale_2`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content;
-- ensure the value is a correct I18N locale string.
-
-### For the value of `issueTitle_2`
-
-This is a text value representing the title of the issue in a second language.
-
-#### Operations for `issueTitle_2`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content.
-
-### For the value of `sectionTitle_2`
-
-This is a text value representing the section title in the second language.
-
-#### Operations for `sectionTitle_2`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content.
-
-### For the value of `articleTitle_2`
-
-This is a text value representing the article title in the second language.
-
-#### Operations for `articleTitle_2`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content.
-
-### For the value of `articleAbstract_2`
-
-This is a text value representing the article title in the second language.
-
-#### Operations for `articleAbstract_2`
-
-- check if the value exists;
-- ensure there are no new line characters. If they exist, delete it;
-- trim for whitespace at the beginning and in the end of the content;
-- the content origin is sometimes an OCR process. Provide all the corrections needed checking appropriate spelling;
-
-On May, 2024 some fields were added for basic multilingual support. The extra fields are: `locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`.
+In May, 2024 some fields were added for basic multilingual support. The extra fields are: `locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`.
 The field `locale_2` should use the same format (i.e. `fr_CA`) that OJS uses for it's `locale="en"` attribute.
 
-On March, 2025 fields `issue_cover_image_filename`, `issue_cover_image_filename_alt_text` and `orcid` were added. The first two are repeated accross all the CSV records (rows). The `orcid` must be an URL. In case of many authors, ORCIDs should be separated with `;` in the order of author completition.
+In March, 2025 fields `issue_cover_image_filename`, `issue_cover_image_filename_alt_text` and `orcid` were added. The first two are repeated accross all the CSV records (rows). The `orcid` must be an URL. In case of many authors, ORCIDs should be separated with `;` in the order of author completition.
 
-On December 2025 `roarname`, and `roarid` fields were added. This was necessary to satisfy 3.5 XSD. Mind that if you enter the value for `roarname` in the CSV, you MUST add the value for the `roarid`.
+In December 2025 `roarname`, and `roarid` fields were added. This was necessary to satisfy 3.5 XSD.
 
 ## Prepare article related metadata and images for the creation of the XML
 
-### Linux/GNU
-
 The following steps are needed to prepare the article related metadata and images for the creation of the XML file. For automated processing, see below the `process-issue.sh` bash script. Before using this script, rename the `dot.env` file to `.env` from the `scripts` sub-directory, open it and modify the `BASE_PATH` value according to your environment. This path is the full path to the sub-directory where you started your work gathering the metadata (the CSV files) and the image files for the covers.
-
-### Windows
-
-Efforts are made to transform the BASH scripts into pure PHP ones. The aim is to make the application OS agnostic. At this moment you may use the `process_issue.php` in the root directory of the application as long as you put the working files of an issue into a subdirectory of `tmp` directory. You may issue the following commands to process the data.
-
-```bash
-php process_issue.php "tmp/path/to/unzipped_issue" "cover.jpg" "/base/path" "master"
-```
-
-verification of the resulted XML against the XSD schema:
-
-```bash
-php process_issue.php "tmp/path/to/unzipped_issue" "cover.jpg" "/base/path" "master" --schema="schema/schema_3_5.xsd
-```
-
-Skip validation (not recommended for production):
-
-```bash
-php process_issue.php "/path/to/unzipped_issue" "cover.jpg" "/base/path" "master" --no-validate
-```
-
-For more information issue a command with the `--help` flag like the following: `php /home/nicolaie/Documents/PLATFORMA.EDITORIALA/DATE/ojsxml/process_issue.php --help`.
 
 ### Pure manual processing of the issue data into XML
 
-You may choose to create the articles' covers by hand, and copy all the resources in their indicated places. All of the following steps assume that you have the CSV file, the cover image file (jpg format) for the issue, the article PDFs, and the cover images (jpg format) for each article in a single sub-directory in a place of your preference.
+You may choose to create the article covers by hand and copy all the resources in their indicated places. All of the following steps assume that you have the CSV file, the cover image file (jpg format) for the issue, the article PDFs, and the cover images (jpg format) for each article in a single sub-directory in a place of your preference.
 
 1. Set up the variables in the `config.ini` file. See ***Annex 1*** for an example. This should be done only once or if you change projects.
 2. Place the CSV file in the sub-directory `docroot/csv/abstracts` of the application. The `abstracts` input sub-directory must contain an `article_galleys` and `issue_cover_images` sub-directory (both of which exist within `docroot/csv/abstracts` by default), and the issue cover image if you have one. Remember to put here the issue cover image next to the CSV file.
@@ -534,7 +101,7 @@ You may choose to create the articles' covers by hand, and copy all the resource
 6. Run `php csvToXmlConverter.php issues <ojs_username> ./docroot/csv/abstracts ./docroot/output` from the application subdirectory, where `ojs_username` should be the name of the user designated to make the uploads and management of the OJS platform. See that you already have PHP installed.
 7. The XML file(s) will be output in the specified output directory (`docroot/output` directory in this case).
 
-### Automated processing of the issue data into XML using Linux/GNU CLI
+### Automated processing of the issue data into XML
 
 The above steps can be tedious and error prone, especially if you have many articles in the issue. If you have all the resources in a single sub-directory, you may use the `process-issue.sh` script to automate the process of creating the XML file and copying the files to their respective places. The script could be placed in a diferent location from the ojsxml application. For convenience, it is placed in the subdirectory where all the publications resources are processed. The script should be accompanied by the `.env` file. If you don't have one, create it on the spot and addapt the `BASE_PATH` variable to your environment.
 
@@ -650,7 +217,51 @@ If you application is managed via Supervisor, you may restart the service with t
 sudo supervisorctl restart all
 ```
 
-### Hack the database concerning the integrity constraint violation
+### Hacks on the OJS code needed for the import to get through
+
+#### First, lets avoid $setsequence wrong type modifing the NativeXmlIssueFilter.php file
+
+Unfortunatelly the application is not ready for the import of the XML file as is. It needs a bit of tinkering as following.
+
+The lines 340 and 377 of the original file `NativeXmlIssueFilter.php` must be modified prior any attempt of upload.
+Edit the file issuing the following command in the terminal of the application server:
+
+```bash
+sudo nano -l /var/www/<name.ofthe.journal.io>/plugins/importexport/native/filter/NativeXmlIssueFilter.php
+```
+
+where `<name.ofthe.journal.io>` is the name of the journal (the name of the subdirectory) you are working on.
+
+This is necessary to avoid the following error at the moment of importing the XML file:
+
+```txt
+## Errors occured:
+Generic Items
+- PKP\section\PKPSection::setSequence(): Argument #1 ($sequence) must be of type float, string given, called in /var/www/revue.of.lis/plugins/importexport/native/filter/NativeXmlIssueFilter.php on line 340
+```
+
+Edit the fragment `$section->setSequence($node->getAttribute('seq'));` on the line 340, and modify it as following:
+
+```php
+$section->setSequence(floatval($node->getAttribute('seq')));
+```
+
+Function `floatval` wrapping will ensure correct casting of the value.
+Edit the line 347, and modify it as following:
+
+```php
+$section->setAbstractWordCount(floatval($node->getAttribute('abstract_word_count')));
+```
+
+to avoid the following error:
+
+```txt
+APP\section\Section::setAbstractWordCount(): Argument #1 ($wordCount) must be of type int, string given, called in /var/www/<name.ofthe.journal.io>/plugins/importexport/native/filter/NativeXmlIssueFilter.php on line 347
+```
+
+Now you are ready to make the next step which involves modifications to the database, unfortunatelly. No biggie, though.
+
+### Hack the databese on the integrity constraint violation
 
 You are not out of the woods, yet.
 Making an attempt to upload the file to import it, it will throw an error generated by the database this time. The entire error message is something along the following lines:
@@ -889,27 +500,3 @@ is34 = True
 ### 8th of December, 2025
 
 - `roarname`, and `roarid` fields were added. This was necessary to satisfy 3.5 XSD.
-
-### 10th of December, 2025
-
-- creation of the infrastructure needed to transform the scripts into a small web application presenting a GUI;
-- creation of the `php-cli.ini` so that the user will not get too much into the nitty-gritty of PHP configuration;
-- creation of the `process_issue.php` script that replicates and improves the BASH script;
-- creation of the `index.php` script that starts the web GUI;
-- creation of the `run-server.sh` for Linux/GNU, and `run-server.bat` for Windows - portability is aimed;
-- ancilary: `styles.css` needed for GUI;
-- README updated.
-
-### 28th of December, 2025
-
-- refining the UX;
-- the resulting XML file is bearing an explicit name;
-- creation of a simple routing system, and a peage where the data accumulated is visualy accessible;
-- you may download all the data accumulated in the local DB as CSV file;
-- multiple optimisations of the application.
-
-### 29th of December
-
-- UX improvements;
-- multiple production scenarios completed with passing colors;
-- fixes
