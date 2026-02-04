@@ -16,7 +16,7 @@ After import check all the articles and designate the primary contact. This is n
 
 ### Batch processing
 
-For the purpose of accelerating the processing, on January the 12th, a way of processing batches of data was introduced. On short, what you have to do is to put in the `resources` subfolder tha data in the form of zip files or subfolders for each issue you want to process, and then launch the `batch-processing.sh` script from terminal. Be sure you have the `.env` file adapted to your system corresponding paths for the project. For more information read the `BATCH_PROCESSING.md` help file [BATCH_PROCESSING](scripts/BATCH_PROCESSING.md).
+For the purpose of accelerating the processing, on January the 12th, a way of processing batches of data was introduced. On short, what you have to do is to put in the `tmp` subfolder the data in the form of zip files or subfolders for each issue you want to process, and then launch the `batch-processing.sh` script from terminal. Be sure you have the `.env` file adapted to your system corresponding paths for the project. For more information read the `BATCH_PROCESSING.md` help file [BATCH_PROCESSING](scripts/BATCH_PROCESSING.md).
 
 Batch processing is available only on Linux.
 
