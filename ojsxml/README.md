@@ -522,8 +522,6 @@ is34 = True
 ### 8th of December, 2025
 
 - `roarname`, and `roarid` fields were added. This was necessary to satisfy 3.5 XSD.
-<<<<<<< HEAD
-=======
 
 ### 10th of December, 2025
 
@@ -566,4 +564,3 @@ The following features were created and added in the batch processing:
 - ✅ **Batch reporting** - Creates a timestamped batch log with overall summary
 - ✅ **Dry run mode** - Preview what will be processed without making changes
 - ✅ **Cleanup option** - Optionally remove extracted folders after processing
->>>>>>> 590c5eb (Batch processing added)
