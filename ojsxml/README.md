@@ -1,4 +1,26 @@
-# CSV to OJS XML Import for OJS 3.5.0-3
+![image](doc/img/OJS-XML-Issue-Creator-Index.png)
+# CSV to OJS XML Import for OJS 3.5
+
+This is an application written in PHP. It is transforming a CSV file into a 3.5 OJS valid XML ready to be imported. Although it is developed on Linux/GNU Ubuntu operating system, efforts are put into it to make it a full web application able to be run on Windows as well. This is NOT a comprehensive CSV to OJS XML conversion, and some fields are left out.
+
+## Quick start
+
+If you are running Linux, run the script `run-server.sh` to start the PHP application. Make sure the script is executable. Adapt the application settings to your environment modifying the values of the `.env` file in the root of the application.
+If you are running Windows, run the the script `run-server.bat`. Go to your preferate browser and open a pege on the `localhost:8000`. The GUI will be available to you. You have to have a zip archive containing the CSV file (see bellow the fields), and at least the cover of the issue, if there is one.
+
+Before generating the XML file followed by the intent of using the import plugin, check all the data from the CSV again, and again. Things you have to be very careful with:
+
+- the abbreviation of the sections MUST be identical to those already set in the OJS instance you want to import. Be very, very thorough. Otherwise "ghost" records will be created in the database.
+
+After import check all the articles and designate the primary contact. This is not done automatically by OJS import plugin.
+
+### Batch processing
+
+For the purpose of accelerating the processing, on January the 12th, a way of processing batches of data was introduced. On short, what you have to do is to put in the `resources` subfolder tha data in the form of zip files or subfolders for each issue you want to process, and then launch the `batch-processing.sh` script from terminal. Be sure you have the `.env` file adapted to your system corresponding paths for the project. For more information read the `BATCH_PROCESSING.md` help file [BATCH_PROCESSING](scripts/BATCH_PROCESSING.md).
+
+Batch processing is available only on Linux.
+
+## Historic context
 
 This collection of scripts and workflows was adapted from https://github.com/rkbuoe/ojsxml repo, which, in turn is a fork of the original repo from https://github.com/ualbertalib/ojsxml.
 
@@ -500,3 +522,48 @@ is34 = True
 ### 8th of December, 2025
 
 - `roarname`, and `roarid` fields were added. This was necessary to satisfy 3.5 XSD.
+<<<<<<< HEAD
+=======
+
+### 10th of December, 2025
+
+- creation of the infrastructure needed to transform the scripts into a small web application presenting a GUI;
+- creation of the `php-cli.ini` so that the user will not get too much into the nitty-gritty of PHP configuration;
+- creation of the `process_issue.php` script that replicates and improves the BASH script;
+- creation of the `index.php` script that starts the web GUI;
+- creation of the `run-server.sh` for Linux/GNU, and `run-server.bat` for Windows - portability is aimed;
+- ancilary: `styles.css` needed for GUI;
+- README updated.
+
+### 28th of December, 2025
+
+- refining the UX;
+- the resulting XML file is bearing an explicit name;
+- creation of a simple routing system, and a peage where the data accumulated is visualy accessible;
+- you may download all the data accumulated in the local DB as CSV file;
+- multiple optimisations of the application.
+
+### 29th of December, 2025
+
+- UX improvements;
+- multiple production scenarios completed with passing colors;
+- fixes
+
+### 12th of January, 2026
+
+- batch processing script was created (see the scripts subfolder)
+
+The following features were created and added in the batch processing:
+
+- ✅ **Automatic ZIP extraction** - Unzips each file into its own subfolder
+- ✅ **Safety checks** - Skips processing if extraction folder already exists (prevents overwriting)
+- ✅ **Automated processing** - Runs XML generation for each issue automatically
+- ✅ **PDF compression** - Automatically compresses large PDFs (>500KB) using Ghostscript to reduce XML size
+- ✅ **Self-contained output** - XML files are generated in the same folder as the source files
+- ✅ **Detailed logging** - Creates individual log files for each processed issue
+- ✅ **Error tracking** - Generates a consolidated `errors.md` file for easy inspection
+- ✅ **XML validation** - Validates generated XML files against the schema
+- ✅ **Batch reporting** - Creates a timestamped batch log with overall summary
+- ✅ **Dry run mode** - Preview what will be processed without making changes
+- ✅ **Cleanup option** - Optionally remove extracted folders after processing
+>>>>>>> 590c5eb (Batch processing added)
