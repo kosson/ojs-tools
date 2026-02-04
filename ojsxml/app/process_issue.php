@@ -36,6 +36,7 @@ $noValidate = false;
 $cliSchemaPath = null;
 $verbose = false;
 $quiet = false;
+$customOutputDir = null;
 
 for ($i = 1; $i < $argc; $i++) {
     $arg = $argv[$i];
@@ -43,6 +44,8 @@ for ($i = 1; $i < $argc; $i++) {
         $cliSchemaPath = substr($arg, strlen('--schema='));
     } elseif (strpos($arg, '--log-file=') === 0) {
         $cliLogPath = substr($arg, strlen('--log-file='));
+    } elseif (strpos($arg, '--output=') === 0) {
+        $customOutputDir = substr($arg, strlen('--output='));
     } elseif ($arg === '--no-validate' || $arg === '--no-validate=true') {
         $noValidate = true;
     } elseif ($arg === '--no-validate=false') {
@@ -84,12 +87,19 @@ if (in_array('--help', $argv) || in_array('-h', $argv)) {
     echo "\nFlags:\n";
     echo "  --schema=PATH      Override schema XSD path (absolute or relative).\n";
     echo "  --no-validate      Skip XSD validation (not recommended for production).\n";
+    echo "  --output=PATH      Custom output directory for generated XML (default: docroot/output).\n";
+    echo "  --log-file=PATH    Write all output to specified log file.\n";
     echo "  --verbose          Show extra debug output.\n";
     echo "  --quiet            Suppress non-error output.\n";
     echo "  -h, --help         Show this help message.\n";
+    echo "\nFeatures:\n";
+    echo "  - Automatically compresses large PDFs (>500KB) using Ghostscript before XML generation\n";
+    echo "  - Extracts first page of PDFs as thumbnails\n";
+    echo "  - Validates generated XML against OJS schema\n";
     echo "\nExamples:\n";
     echo "  php process_issue.php \"./tmp/myissue\" cover.jpg --schema=./schema/schema_3_5.xsd\n";
     echo "  php process_issue.php \"./tmp/myissue\" --no-validate\n";
+    echo "  php process_issue.php \"./tmp/myissue\" \"\" \"\" master --output=./tmp/myissue\n";
     exit(0);
 }
 
@@ -110,7 +120,14 @@ if (!is_dir($pdfDirectory)) {
 $jpgOutputDirectory = $basePath . '/ojsxml/docroot/csv/abstracts/issue_cover_images';
 $pdfOutputDirectory = $basePath . '/ojsxml/docroot/csv/abstracts/article_galleys';
 $csvOutputDirectory = $basePath . '/ojsxml/docroot/csv/abstracts';
-$outputDirectory = $basePath . '/ojsxml/docroot/output';
+
+// Use custom output directory if provided, otherwise use default
+if ($customOutputDir) {
+    $outputDirectory = $customOutputDir;
+    out("Using custom output directory: $outputDirectory\n");
+} else {
+    $outputDirectory = $basePath . '/ojsxml/docroot/output';
+}
 
 // Create output directories
 foreach ([$jpgOutputDirectory, $pdfOutputDirectory, $csvOutputDirectory, $outputDirectory] as $dir) {
@@ -235,9 +252,73 @@ foreach ($pdfFiles as $pdfFile) {
     }
 
     // Copy PDF to output directory
-    if (!copy($pdfFile, $pdfOutputDirectory . '/' . basename($pdfFile))) {
+    $targetPdf = $pdfOutputDirectory . '/' . basename($pdfFile);
+    if (!copy($pdfFile, $targetPdf)) {
         err("  Error: Could not copy $pdfFile to output directory.\n");
     }
+}
+
+out("\nStep 1b: Compressing PDF files to reduce size...\n");
+
+// Step 1b: Compress PDF files using Ghostscript to reduce XML file size
+$pdfFiles = glob($pdfOutputDirectory . '/*.pdf');
+$compressed_count = 0;
+
+foreach ($pdfFiles as $pdfFile) {
+    $originalSize = filesize($pdfFile);
+    
+    // Skip if PDF is already small (less than 500KB)
+    if ($originalSize < 512000) {
+        dbg("  Skipping compression for small file: " . basename($pdfFile) . " (" . round($originalSize / 1024) . " KB)\n");
+        continue;
+    }
+    
+    $tempCompressed = $pdfFile . '.compressed.pdf';
+    
+    // Try Ghostscript compression (most effective)
+    if (command_exists('gs')) {
+        $cmd = build_command([
+            'gs',
+            '-sDEVICE=pdfwrite',
+            '-dCompatibilityLevel=1.4',
+            '-dPDFSETTINGS=/ebook',  // Good balance between quality and size
+            '-dNOPAUSE',
+            '-dQUIET',
+            '-dBATCH',
+            '-sOutputFile=' . $tempCompressed,
+            $pdfFile
+        ]);
+        
+        $output = [];
+        $returnCode = null;
+        exec($cmd, $output, $returnCode);
+        
+        if ($returnCode === 0 && file_exists($tempCompressed)) {
+            $compressedSize = filesize($tempCompressed);
+            $reduction = round((1 - $compressedSize / $originalSize) * 100);
+            
+            // Only use compressed version if it's smaller
+            if ($compressedSize < $originalSize) {
+                rename($tempCompressed, $pdfFile);
+                out("  Compressed: " . basename($pdfFile) . " (" . round($originalSize / 1024) . " KB -> " . round($compressedSize / 1024) . " KB, saved {$reduction}%)\n");
+                $compressed_count++;
+            } else {
+                unlink($tempCompressed);
+                dbg("  Kept original (compressed version was larger): " . basename($pdfFile) . "\n");
+            }
+        } else {
+            if (file_exists($tempCompressed)) {
+                unlink($tempCompressed);
+            }
+            out("  Warning: Could not compress " . basename($pdfFile) . "\n");
+        }
+    }
+}
+
+if ($compressed_count > 0) {
+    out("  Successfully compressed $compressed_count PDF file(s).\n");
+} else {
+    out("  No PDF files required compression.\n");
 }
 
 out("\nStep 2: Finding and copying CSV file...\n");
