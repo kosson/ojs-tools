@@ -316,8 +316,9 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->startElement("article");
         $this->getXmlWriter()->writeAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
         $this->getXmlWriter()->writeAttribute("status", "3");
-        $this->getXmlWriter()->writeAttribute("stage" ,"proof");
+        $this->getXmlWriter()->writeAttribute("stage" ,"production");
         $this->getXmlWriter()->writeAttribute("current_publication_id", $articleData["currentId"]);
+
         $this->_writeIdElement($articleData["currentId"]);
         $this->_writeSubmissionFile($articleData);
         $this->writePublication($articleData);
@@ -347,7 +348,7 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->writeAttribute("xmlns:xsi","http://www.w3.org/2001/XMLSchema-instance");
         $this->getXmlWriter()->writeAttribute("id", $articleData["currentId"]);
 		$this->getXmlWriter()->writeAttribute("file_id", $articleData["currentId"]);
-        $this->getXmlWriter()->writeAttribute("stage", "public");
+        $this->getXmlWriter()->writeAttribute("stage", "proof");
         $this->getXmlWriter()->writeAttribute("viewable", "true");
         $this->getXmlWriter()->writeAttribute("genre", $this->_getGenreName());
         $this->getXmlWriter()->writeAttribute("uploader", $this->_user);
@@ -525,11 +526,18 @@ class IssuesXmlBuilder extends XMLBuilder {
     function writeAuthors($articleData) {
         $authors = new Authors($articleData["authors"], $articleData["authorEmail"], $articleData["affiliations"]);
 
+        // Only create <authors> element if there are actually authors
+        $authorsList = $authors->getAuthors();
+        if (empty($authorsList)) {
+            // Skip creating authors element if there are no authors
+            return;
+        }
+
         $this->getXmlWriter()->startElement("authors");
         $this->_setXmlnsAttributes();
 
         $authorIndex = 0;
-        foreach ($authors->getAuthors() as $authorData) {
+        foreach ($authorsList as $authorData) {
             $authorData["seq"] = $authorIndex;
             $authorData["currentId"] = $articleData["currentId"];
             $this->writeAuthor($authorData);
@@ -539,6 +547,8 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->endElement();
 
     }
+
+
 
     /**
      * Adds an individual author
@@ -595,11 +605,10 @@ class IssuesXmlBuilder extends XMLBuilder {
         $this->getXmlWriter()->writeRaw(trim($autorData["country"]));
         $this->getXmlWriter()->endElement();
 
-        if (trim($autorData["email"]) != "") {
-            $this->getXmlWriter()->startElement("email");
-            $this->getXmlWriter()->writeRaw(trim($autorData["email"]));
-            $this->getXmlWriter()->endElement();
-        }
+        // Email is mandatory according to XSD schema, write it even if empty
+        $this->getXmlWriter()->startElement("email");
+        $this->getXmlWriter()->writeRaw(trim($autorData["email"] ?? ""));
+        $this->getXmlWriter()->endElement();
 
         $this->getXmlWriter()->endElement();
     }
