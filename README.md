@@ -12,7 +12,7 @@ This is a PHP application needed for massive data imports. Read the [documentati
 
 ## DOCKERIZED OJS 3.5.0-3
 
-This is a Dockerized setup for Open Journal Systems (OJS) 3.5.0-3 version with automatic configuration and a fix for the ROR dataset crash during installation. Read the [documentation](dockerized-ojs-3.5.0-3/README.md).
+A Dockerized setup for Open Journal Systems (OJS) 3.5.0-3 version with automatic configuration and a fix for the ROR dataset crash during installation is available to use. Read the [documentation](dockerized-ojs-3.5.0-3/README.md).
 
 ## USEREXTRACT
 
