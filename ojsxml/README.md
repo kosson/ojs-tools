@@ -6,7 +6,7 @@ This is an application written in PHP. It is transforming a CSV file into a 3.5 
 ## Quick start
 
 If you are running Linux, run the script `run-server.sh` to start the PHP application. Make sure the script is executable. Adapt the application settings to your environment modifying the values of the `.env` file in the root of the application.
-If you are running Windows, run the the script `run-server.bat`. Go to your preferate browser and open a pege on the `localhost:8000`. The GUI will be available to you. You have to have a zip archive containing the CSV file (see bellow the fields), and at least the cover of the issue, if there is one.
+If you are running Windows, run the the script `run-server.bat`. Go to your preferate browser and open a page on the `localhost:8000`. The GUI will be available to you. You have to have a zip archive containing the CSV file (see bellow the fields), and at least the cover of the issue, if there is one.
 
 Before generating the XML file followed by the intent of using the import plugin, check all the data from the CSV again, and again. Things you have to be very careful with:
 
@@ -18,7 +18,11 @@ After import check all the articles and designate the primary contact. This is n
 
 For the purpose of accelerating the processing, on January the 12th, a way of processing batches of data was introduced. On short, what you have to do is to put in the `tmp` subfolder the data in the form of zip files or subfolders for each issue you want to process, and then launch the `batch-processing.sh` script from terminal. Be sure you have the `.env` file adapted to your system corresponding paths for the project. For more information read the `BATCH_PROCESSING.md` help file [BATCH_PROCESSING](scripts/BATCH_PROCESSING.md).
 
+Pay attention to the logs that are created for the whole processing operation found in the `tmp` root, and also to the individual subfolders which contains the log file for that very issue. Most of the issue crop up at the processing time if you look at the terminal. But, when in doubt, consult the logs. They are very detailed adding information for every stage through which the folder was passed through during processing. 
+
 Batch processing is available only on Linux.
+
+After the issues are processed, there is a script that copies any XML file found in the `tmp` subfolder in the `resources` subfolder. This way you have all the XML resources ready to be uploaded in the root directory of the OJS installation.
 
 ## Historic context
 
@@ -103,7 +107,7 @@ The following fields are optional and can be left empty:
 In May, 2024 some fields were added for basic multilingual support. The extra fields are: `locale_2,issueTitle_2,sectionTitle_2,articleTitle_2,articleAbstract_2`.
 The field `locale_2` should use the same format (i.e. `fr_CA`) that OJS uses for it's `locale="en"` attribute.
 
-In March, 2025 fields `issue_cover_image_filename`, `issue_cover_image_filename_alt_text` and `orcid` were added. The first two are repeated accross all the CSV records (rows). The `orcid` must be an URL. In case of many authors, ORCIDs should be separated with `;` in the order of author completition.
+In March, 2025 fields `issue_cover_image_filename`, `issue_cover_image_filename_alt_text` and `orcid` were added. The first two are repeated across all the CSV records (rows). The `orcid` must be an URL. In case of many authors, ORCIDs should be separated with `;` in the order of author completition.
 
 In December 2025 `roarname`, and `roarid` fields were added. This was necessary to satisfy 3.5 XSD.
 
@@ -125,13 +129,13 @@ You may choose to create the article covers by hand and copy all the resources i
 
 ### Automated processing of the issue data into XML
 
-The above steps can be tedious and error prone, especially if you have many articles in the issue. If you have all the resources in a single sub-directory, you may use the `process-issue.sh` script to automate the process of creating the XML file and copying the files to their respective places. The script could be placed in a diferent location from the ojsxml application. For convenience, it is placed in the subdirectory where all the publications resources are processed. The script should be accompanied by the `.env` file. If you don't have one, create it on the spot and addapt the `BASE_PATH` variable to your environment.
+The above steps can be tedious and error prone, especially if you have many articles in the issue. If you have all the resources in a single sub-directory, you may use the `process-issue.sh` script to automate the process of creating the XML file and copying the files to their respective places. The script could be placed in a different location from the ojsxml application. For convenience, it is placed in the subdirectory where all the publications resources are processed. The script should be accompanied by the `.env` file. If you don't have one, create it on the spot and adapt the `BASE_PATH` variable to your environment.
 
-If you have created a sub-directory with all the article PDFs, the accompaning CSV file, and the issue cover image, but you have not created the article covers images (jpg format), you may use the `process-issue.sh` bash script that will do all the heavy lifting for you. Moreover, it will copy all the files to the right places, and will run the PHP command that will create the XML file in the `docroot/output` sub-directory. The script is located in the `scripts` sub-directory of the application. If you do not have a cover issue image, you may use the `extract-cover.sh` script to extract the first page of the issue PDF as a cover image.
+If you have created a sub-directory with all the article PDFs, the accompanying CSV file, and the issue cover image, but you have not created the article covers images (jpg format), you may use the `process-issue.sh` bash script that will do all the heavy lifting for you. Moreover, it will copy all the files to the right places, and will run the PHP command that will create the XML file in the `docroot/output` sub-directory. The script is located in the `scripts` sub-directory of the application. If you do not have a cover issue image, you may use the `extract-cover.sh` script to extract the first page of the issue PDF as a cover image.
 
 **process-issue.sh** script will do the following:
 
-In the begining of the script run, it will delete all the previous resources existing in the `docroot/csv/abstracts` subdirectory keeping only the necessary `.gitkeep` file. The following steps will be executed by the script:
+In the beginning of the script run, it will delete all the previous resources existing in the `docroot/csv/abstracts` subdirectory keeping only the necessary `.gitkeep` file. The following steps will be executed by the script:
 
 - deletes all the files in the `docroot/csv/abstracts` sub-directory, except the `.gitkeep` file;
 - copies the PDFs in the subdirectory to the `article_galleys` sub-directory;
@@ -141,7 +145,7 @@ In the begining of the script run, it will delete all the previous resources exi
 - copies the issue cover image to the `docroot/csv/abstracts` sub-directory;
 - runs the php command that will create the XML file in the `docroot/output` sub-directory.
 
-At the moment of the command running, the process will ask you to give it the full path (not the relative) of the sub-directory where the CSV and the PDFs and the issue cover image are located. After you input the correct path, you will be requested to enter the filename of the issue cover file. Now, all the resources will be transfered in their respective places under the `docroot/csv` sub-directory.
+At the moment of the command running, the process will ask you to give it the full path (not the relative) of the sub-directory where the CSV and the PDFs and the issue cover image are located. After you input the correct path, you will be requested to enter the filename of the issue cover file. Now, all the resources will be transferred in their respective places under the `docroot/csv` sub-directory.
 
 In the script there are some default values for the places where the CSV and the PDFs are located on the developer's machine. You may change them to your liking. If you set the `.env` file, the script will use the `BASE_PATH` variable to determine where to look for the CSV and the PDFs. If you do not set the `BASE_PATH` variable, it will use the default values from the script. For example, my `.env` file looks like this:
 
@@ -281,7 +285,7 @@ to avoid the following error:
 APP\section\Section::setAbstractWordCount(): Argument #1 ($wordCount) must be of type int, string given, called in /var/www/<name.ofthe.journal.io>/plugins/importexport/native/filter/NativeXmlIssueFilter.php on line 347
 ```
 
-Now you are ready to make the next step which involves modifications to the database, unfortunatelly. No biggie, though.
+Now you are ready to make the next step which involves modifications to the database, unfortunately. No biggie, though.
 
 ### Hack the databese on the integrity constraint violation
 
@@ -305,10 +309,10 @@ This one is tricky because you have to delete the constraint between the `public
 
 ![](doc/img/FK-publications_primary_contact_id.png)
 
-Elimination the constraints is the first bit. Now you need to delete the foreign key connection from the `authors` table as well. If you do not operate these modifications, you cannot make the import in OJS 3.4.0.8 version, at least.
-For making the modifications, [DBeaver Community](https://dbeaver.io/) was used, being configured to access the database via ssh. Do not edit the database without a backup first. The modifications were applied first on a virtualized copy of the OJS multijournal application, and then on the production machine.
+Elimination the constraints is the first bit. Now you need to delete the foreign key connection from the `authors` table as well. If you do not operate these modifications, you cannot make the import in OJS 3.5.0-3 version, at least.
+For making the modifications, [DBeaver Community](https://dbeaver.io/) was used, being configured to access the database via ssh. Do not edit the database without a backup first. The modifications were applied first on a virtualised copy of the OJS multi journal application, and then on the production machine.
 
-Having DBeaver app started and connected to the database, proceed with the following opperations:
+Having DBeaver app started and connected to the database, proceed with the following operations:
 
 - delete the `publications_primary_contact_id` from `Foreign keys` belonging to the `publications` table.
 - delete the `authors_publication_id_foreign` from `Foreign keys` belonging to the `authors` table. In a simple SQL script, the following commands are enough.
@@ -376,7 +380,7 @@ tools/importExport.php NativeImportExportPlugin import [xmlFileName] [journal_pa
 	issue_id [issueId] section_abbrev [abbrev]
 ```
 
-If these tests returned positive results, it means you have all the tools necessary to proced to running the magic PHP command.
+If these tests returned positive results, it means you have all the tools necessary to proceed to running the magic PHP command.
 
 Now, upload and put in the root directory of the OJS application the XML file you have created with the *ojsxml* application. For the big file uploads (base64 encoding of "heavy" PDFs) do not use the GUI the OJS application is offering. It is a short path to failure. Resource to the script available in the `tools` subdirectory of the OJS application.
 
@@ -421,9 +425,9 @@ ALTER TABLE journalsunibuc.authors ADD CONSTRAINT authors_publications_id_foreig
 ALTER TABLE journalsunibuc.publications ADD CONSTRAINT publications_primary_contact_id FOREIGN KEY (primary_contact_id) REFERENCES journalsunibuc.authors(author_id) ON DELETE SET NULL ON UPDATE RESTRICT;
 ```
 
-You could redo the connections manualy using DBeaver, but after doing this for a few rounds, it gets tedious. So, the SQL script is the way to go.
+You could redo the connections manually using DBeaver, but after doing this for a few rounds, it gets tedious. So, the SQL script is the way to go.
 
-Provided all went well, you have successfuly imported a whole issue.
+Provided all went well, you have successfully imported a whole issue.
 Congratulations!
 
 ## Annex 1
@@ -491,7 +495,7 @@ is34 = True
 
 ### 27 Mar, 2025
 
-- added the `orcid` field to the CSV file for the issues. The field is optional, and in case of many authors, ORCIDs should be separated with `;` in the order of author completition;
+- added the `orcid` field to the CSV file for the issues. The field is optional, and in case of many authors, ORCIDs should be separated with `;` in the order of author completion;
 - Place the cover image for the issue in the `issue_cover_images` directory. The cover image for the issue is repeated across the CSV records. The `issue_cover_image_filename` and `issue_cover_image_filename_alt_text` fields are optional. The script creates a correct `covers` element in the `<issue xmlns="http://pkp.sfu.ca" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" published="1">` element of the output file.
 
 ### 11th of May, 2025
@@ -511,7 +515,7 @@ is34 = True
 
 - removing locale from `<publication xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" locale="en"`;
 - fixed user appearance in the filename;
-- removinf locale from `<citations locale="en">`;
+- removing locale from `<citations locale="en">`;
 - fixing native.xsd constraints;
 
 ### 25th of May, 2025
@@ -564,3 +568,7 @@ The following features were created and added in the batch processing:
 - ✅ **Batch reporting** - Creates a timestamped batch log with overall summary
 - ✅ **Dry run mode** - Preview what will be processed without making changes
 - ✅ **Cleanup option** - Optionally remove extracted folders after processing
+
+### 3rd of February, 2026
+
+A script was created to copy the resulting XML files in the resources folder.
