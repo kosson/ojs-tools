@@ -4,7 +4,7 @@ This repo is a collection of tools needed to acomplish several tasks working wit
 The repo gathers scripts created by other fellow colleagues, and some of my own production.
 The following scripts and solutions are available.
 
-The software comes as is. Check and double check everything. Although I do my best, it is better to check the rezulted data.
+The software comes as is. Check and double check everything. Although I do my best, it is better to check the resulted data.
 
 ## OJSXML
 
