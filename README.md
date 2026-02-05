@@ -1,10 +1,10 @@
 # ojs-tools
 
-This repo is a collection of tools needed to solve issue with Open Journal System. It aims to help all those who seek sollutions to data importing/exporting in OJS. It also gives some steps to overcame certain limitations and issues.
-
+This repo is a collection of tools needed to acomplish several tasks working with Open Journal System. It aims to help all those who seek sollutions to data importing/exporting in OJS. It also gives some steps to overcame certain limitations and issues.
 The repo gathers scripts created by other fellow colleagues, and some of my own production.
-
 The following scripts and solutions are available.
+
+The software comes as is. Check and double check everything. Although I do my best, it is better to check the rezulted data.
 
 ## OJSXML
 
