@@ -548,8 +548,6 @@ class IssuesXmlBuilder extends XMLBuilder {
 
     }
 
-
-
     /**
      * Adds an individual author
      *
